@@ -5,6 +5,7 @@ This guide is for school IT teams and technical operators.
 It assumes you are comfortable with normal software setup, but not necessarily with local AI tooling yet.
 
 If you are a school leader, administrator, or educator, start with the main [README](../README.md) instead.
+If you need the leadership summary first, read the [School Leader Brief](SCHOOL_LEADER_BRIEF.md).
 
 ---
 
@@ -23,6 +24,19 @@ You are not deploying:
 - an autonomous agent
 - an email-sending bot
 - a grading or admissions system
+
+---
+
+## Architecture at a Glance
+
+```mermaid
+flowchart LR
+    A["Operator browser"] --> B["Streamlit app"]
+    B --> C["Python services"]
+    C --> D["SQLite"]
+    C --> E["LM Studio"]
+    E --> F["Local model"]
+```
 
 ---
 

@@ -4,7 +4,16 @@
 
 Show that a messy school office input can become a polished, copy-ready action pack in under a minute on one local machine.
 
-## Demo flow
+## Three-Minute Leadership Demo
+
+1. Open the app and point to the local status pill.
+2. Say: "This runs locally and keeps the operator in control."
+3. Process one absence fixture.
+4. Show the structured facts, internal brief, and subject lines.
+5. Show one draft reply.
+6. End with the privacy story: local-first, no auto-send, human review.
+
+## Seven-Minute Full Demo
 
 1. Open the app and point out the local status pill and privacy posture.
 2. Process one absence email fixture.
@@ -22,3 +31,13 @@ Show that a messy school office input can become a polished, copy-ready action p
 - same repo works on macOS and Windows
 - model backend stays configurable
 
+## Best Demo Order
+
+Use this order:
+
+1. text
+2. typed note
+3. digital PDF
+4. image OCR
+
+That keeps the strongest and safest cases first.

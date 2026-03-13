@@ -1,0 +1,46 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="640" fill="#0A192F"/>
+  <rect x="40" y="40" width="1200" height="560" rx="28" fill="#0F213D" stroke="#708090" stroke-width="2"/>
+  <g opacity="0.16">
+    <path d="M40 120H1240" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M40 200H1240" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M40 280H1240" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M40 360H1240" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M40 440H1240" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M40 520H1240" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M200 40V600" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M360 40V600" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M520 40V600" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M680 40V600" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M840 40V600" stroke="#F4F4F9" stroke-width="1"/>
+    <path d="M1000 40V600" stroke="#F4F4F9" stroke-width="1"/>
+  </g>
+  <rect x="86" y="94" width="208" height="42" rx="21" fill="#2E8B57" fill-opacity="0.18" stroke="#2E8B57" stroke-width="2"/>
+  <text x="190" y="121" fill="#F4F4F9" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" text-anchor="middle">LOCAL-FIRST SCHOOL AI</text>
+  <text x="86" y="214" fill="#F4F4F9" font-family="IBM Plex Sans, Arial, sans-serif" font-size="64" font-weight="600">Sekretariat-Copilot</text>
+  <text x="86" y="276" fill="#D9E1EC" font-family="IBM Plex Sans, Arial, sans-serif" font-size="28">Turn messy admin inputs into clean drafts on a school-controlled machine.</text>
+  <text x="86" y="336" fill="#D9E1EC" font-family="IBM Plex Sans, Arial, sans-serif" font-size="24">For school offices, decision-makers, and IT teams that want calm,</text>
+  <text x="86" y="372" fill="#D9E1EC" font-family="IBM Plex Sans, Arial, sans-serif" font-size="24">governable AI without default cloud dependency.</text>
+  <rect x="86" y="434" width="230" height="82" rx="20" fill="#F4F4F9"/>
+  <text x="112" y="466" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">School office gains</text>
+  <text x="112" y="500" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="30" font-weight="600">Faster handling</text>
+  <rect x="336" y="434" width="230" height="82" rx="20" fill="#F4F4F9"/>
+  <text x="362" y="466" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">Decision-maker gains</text>
+  <text x="362" y="500" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="30" font-weight="600">Stronger trust</text>
+  <rect x="586" y="434" width="230" height="82" rx="20" fill="#F4F4F9"/>
+  <text x="612" y="466" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">IT gains</text>
+  <text x="612" y="500" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="30" font-weight="600">Local control</text>
+  <rect x="880" y="102" width="286" height="382" rx="28" fill="#F4F4F9" fill-opacity="0.98"/>
+  <rect x="912" y="138" width="190" height="18" rx="9" fill="#0A192F"/>
+  <rect x="912" y="174" width="214" height="12" rx="6" fill="#708090" fill-opacity="0.8"/>
+  <rect x="912" y="212" width="220" height="52" rx="16" fill="#E5EBF3"/>
+  <text x="936" y="243" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">Structured facts</text>
+  <rect x="912" y="282" width="220" height="52" rx="16" fill="#E5EBF3"/>
+  <text x="936" y="313" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">Internal brief</text>
+  <rect x="912" y="352" width="220" height="52" rx="16" fill="#E5EBF3"/>
+  <text x="936" y="383" fill="#0A192F" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">Three reply variants</text>
+  <rect x="912" y="422" width="220" height="28" rx="14" fill="#2E8B57"/>
+  <text x="1022" y="441" fill="#F4F4F9" font-family="IBM Plex Sans, Arial, sans-serif" font-size="15" text-anchor="middle">PROCESS LOCALLY</text>
+  <text x="880" y="546" fill="#D9E1EC" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">Free repo. Local-first by default.</text>
+  <text x="880" y="574" fill="#D9E1EC" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18">Built for serious school pilots in Europe.</text>
+</svg>

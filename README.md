@@ -1,5 +1,7 @@
 # Sekretariat-Copilot
 
+![Sekretariat-Copilot banner](docs/assets/sekretariat-copilot-banner.svg)
+
 Free, local-first AI for school offices.
 
 Turn messy parent emails, typed phone notes, screenshots, and PDFs into clean, review-ready admin outputs on a school-controlled machine.
@@ -9,7 +11,19 @@ This repo is public on purpose. It is both:
 1. a free working tool for school administration workflows
 2. a live proof-of-work for privacy-first AI product and deployment services
 
-It is built for schools that want useful AI without defaulting to US cloud dependency, recurring token bills, or vague pilot theatre.
+It is built for European schools that want useful AI without defaulting to US cloud dependency, recurring token bills, or vague pilot theatre.
+
+---
+
+## Start Here
+
+| If you are... | Start here | Why |
+| --- | --- | --- |
+| A principal, school leader, governor, or decision-maker | [School Leader Brief](docs/SCHOOL_LEADER_BRIEF.md) | Get the value, risk posture, and pilot shape in a few minutes |
+| A school office administrator or educator | Read this README from top to bottom | Understand the use case in plain language |
+| An IT lead, DPO, or technical reviewer | [IT Deployment Guide](docs/IT_DEPLOYMENT.md) | Get the install, rollout, and governance path |
+| Planning a first trial | [Pilot Checklist](docs/PILOT_CHECKLIST.md) | Scope a credible first pilot without confusion |
+| Evaluating common concerns | [FAQ](docs/FAQ.md) | Get short answers to the usual questions |
 
 ---
 
@@ -24,7 +38,8 @@ School administration is full of repetitive work that still needs care:
 - document triage
 - copy-paste into legacy systems
 
-Most of this work is not hard. It is just constant.
+Most of this work is not hard.
+It is just constant.
 
 Sekretariat-Copilot helps staff turn messy inputs into a clean case pack:
 
@@ -41,49 +56,28 @@ The point is simple:
 
 ---
 
-## Why Schools Care
+## Why This Project Stands Out
 
-Schools do not need another abstract AI promise.
+Many AI pilots fail because they start too wide, look too vague, or depend too quickly on external cloud services.
 
-They need a tool that:
+Sekretariat-Copilot is different by design.
 
-- saves time in the office
-- looks serious in front of leaders and governors
-- is easy to explain to staff
-- is easier to defend in privacy review
-- does not create a new monthly inference bill
+- It is narrow.
+  It solves one clear class of work: school administration handling.
+- It is local-first.
+  The app and model can run on the same machine.
+- It is human-in-the-loop.
+  Every output is reviewed before use.
+- It is easier to defend.
+  Local processing removes a large amount of avoidable cloud complexity at the start.
+- It is easier to trial.
+  One pilot machine is enough.
+- It is cheaper to explore.
+  Local models mean no default per-token billing.
+- It is public and inspectable.
+  IT staff can review the repo, architecture, prompts, and tests directly.
 
-This project is designed around that reality.
-
-It is narrow on purpose. That is a strength.
-
----
-
-## Why This Is Different From a Generic AI Pilot
-
-Many AI pilots fail because they start too wide.
-
-They promise transformation. They deliver confusion.
-
-Schools get:
-
-- unclear use cases
-- unclear ownership
-- unclear privacy answers
-- unclear costs
-- unclear next steps
-
-Sekretariat-Copilot avoids that trap.
-
-It focuses on one practical category of work: school administration support.
-
-That makes it easier to:
-
-- trial safely
-- show value quickly
-- train staff simply
-- review governance early
-- decide what to scale later
+That makes it easier to explain to school leaders, administrators, and technical reviewers at the same time.
 
 ---
 
@@ -111,6 +105,113 @@ It makes a narrower and more useful point:
 That matters for trust.
 That matters for procurement.
 That matters for governance.
+That matters for the everyday confidence of staff.
+
+---
+
+## What a School Gets
+
+For a typical case, the app returns:
+
+- structured admin facts
+- a concise internal case brief
+- exactly three subject lines
+- exactly three draft variants
+- visible warnings
+- clarifying questions when needed
+
+The three reply styles always follow the same order:
+
+1. Hemingway-style
+2. Corporate
+3. Educator-first
+
+That consistency matters in office work.
+
+---
+
+## What a Good First Pilot Looks Like
+
+Start small.
+
+Use the repo to test one narrow promise:
+
+**Can this save the school office time on repetitive drafting without creating new trust problems?**
+
+Recommended first pilot:
+
+1. one school office workflow owner
+2. one dedicated pilot machine
+3. synthetic fixtures first
+4. text and digital PDFs first
+5. image OCR only after the core path feels stable
+6. no real sensitive material until the local process is understood
+
+This is how you avoid pilot purgatory.
+
+---
+
+## The Operator Experience
+
+No prompt engineering is needed.
+
+1. Open the app in a browser on the local machine.
+2. Paste a message, type a note, or upload a file.
+3. Leave workflow detection on auto, or choose a workflow.
+4. Click `Process locally`.
+5. Review the facts, brief, subjects, and drafts.
+6. Edit if needed.
+7. Copy the final text into email or the school system.
+8. Click `Reset case`.
+
+That is the whole loop.
+
+---
+
+## Architecture at a Glance
+
+```mermaid
+flowchart LR
+    A["School staff"] --> B["Browser"]
+    B --> C["Streamlit app"]
+    C --> D["Python service layer"]
+    D --> E["SQLite"]
+    D --> F["LM Studio local server"]
+    F --> G["Local model"]
+```
+
+Default posture:
+
+- bind to `127.0.0.1`
+- keep intranet mode off
+- treat raw source material as transient
+- store only derived outputs and minimal audit metadata
+- never auto-send communication
+
+---
+
+## What It Does
+
+- accepts pasted text, typed notes, images, and PDFs
+- detects the likely workflow and lets staff override it
+- extracts facts locally
+- drafts clean copy-ready outputs
+- flags missing or contradictory information
+- exports text, JSON, and CSV
+- stores only minimal local audit metadata by default
+
+---
+
+## What It Refuses to Do
+
+- auto-send emails
+- guess mandatory missing facts
+- process multi-child cases in MVP
+- pretend low-quality OCR is reliable
+- support handwritten cursive
+- behave like an autonomous decision-maker
+
+That restraint is deliberate.
 
 ---
 
@@ -176,161 +277,30 @@ In short:
 
 ---
 
-## Who This Repo Is For
+## Docs by Audience
 
-### School administrators
+### For school leaders
 
-Use it to reduce repetitive writing and handling work without changing your whole system.
+- [School Leader Brief](docs/SCHOOL_LEADER_BRIEF.md)
+- [Pilot Checklist](docs/PILOT_CHECKLIST.md)
+- [Demo Runbook](docs/DEMO_RUNBOOK.md)
 
-### Principals and school leaders
+### For school offices and educators
 
-Use it to show a calm, credible AI direction that feels governable and useful.
+- [FAQ](docs/FAQ.md)
+- [Fixtures overview](fixtures/README.md)
 
-### Teachers and pastoral staff
+### For IT, DPO, and technical reviewers
 
-Use it where school policy allows support with parent communication drafts, meeting notes, or routine summaries.
+- [IT Deployment Guide](docs/IT_DEPLOYMENT.md)
+- [Privacy Note](docs/PRIVACY.md)
+- [Windows Setup Guide](docs/WINDOWS_SETUP.md)
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
 
-### IT teams and data protection reviewers
+### For contributors and reviewers
 
-Use it as an inspectable local-first starting point instead of a black-box SaaS claim.
-
-### Organisations evaluating my services
-
-Use it as proof that I can combine:
-
-- AI workflow design
-- product and UX thinking
-- privacy-first architecture
-- local deployment strategy
-- technical implementation
-- governance-aware documentation
-
----
-
-## What School Staff Actually Get
-
-For a typical case, the app returns:
-
-- structured admin facts
-- a concise internal case brief
-- exactly three subject lines
-- exactly three draft variants
-- visible warnings
-- clarifying questions when needed
-
-The three reply styles always follow the same order:
-
-1. Hemingway-style
-2. Corporate
-3. Educator-first
-
-That consistency matters in office work.
-
----
-
-## What It Does
-
-- accepts pasted text, typed notes, images, and PDFs
-- detects the likely workflow and lets staff override it
-- extracts facts locally
-- drafts clean copy-ready outputs
-- flags missing or contradictory information
-- exports text, JSON, and CSV
-- stores only minimal local audit metadata by default
-
----
-
-## What It Refuses to Do
-
-- auto-send emails
-- guess mandatory missing facts
-- process multi-child cases in MVP
-- pretend low-quality OCR is reliable
-- support handwritten cursive
-- behave like an autonomous decision-maker
-
-That restraint is deliberate.
-
----
-
-## How a School Administrator Uses It
-
-No prompt engineering is needed.
-
-1. Open the app in a browser on the local machine.
-2. Paste a message, type a note, or upload a file.
-3. Leave workflow detection on auto, or choose a workflow.
-4. Click `Process locally`.
-5. Review the facts, brief, subjects, and drafts.
-6. Edit if needed.
-7. Copy the final text into email or the school system.
-8. Click `Reset case`.
-
-That is the whole loop.
-
----
-
-## What a Good First Pilot Looks Like
-
-Start small.
-
-Use the repo to test one narrow promise:
-
-**Can this save the school office time on repetitive drafting without creating new trust problems?**
-
-Recommended first checks:
-
-1. Test the synthetic absence fixture.
-2. Test a typed note with missing dates.
-3. Test a digital PDF.
-4. Keep image OCR as a second step.
-5. Keep real school data out until the fixture path feels solid.
-
-This is how you avoid pilot purgatory.
-
----
-
-## Why This Repo Is Free
-
-I am giving this away for free because the repo itself is useful.
-
-It helps schools and organisations:
-
-- evaluate a real local-first AI workflow
-- understand what a calm, governable AI product can look like
-- test a narrow use case before buying something large
-
-It also shows how I work:
-
-- from idea to product
-- from policy concern to system design
-- from UX to implementation
-- from GitHub proof to deployable demo
-
-The software is free.
-The deeper value is in adaptation, rollout, training, and institution-ready implementation.
-
----
-
-## For IT Departments
-
-If you are technical, start here:
-
-- [IT deployment guide](docs/IT_DEPLOYMENT.md)
-- [Windows setup guide](docs/WINDOWS_SETUP.md)
-- [Privacy note](docs/PRIVACY.md)
-- [Troubleshooting guide](docs/TROUBLESHOOTING.md)
-- [Demo runbook](docs/DEMO_RUNBOOK.md)
-
-Short version:
-
-- the app is a local Streamlit web app
-- the backend is LM Studio by default
-- the model runs locally
-- the app binds to `127.0.0.1` by default
-- local SQLite stores derived outputs and minimal audit metadata
-
-If you are not the IT lead, you can stop here and hand the repo to your technical team.
+- [Contributing Guide](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
 
 ---
 
@@ -362,7 +332,7 @@ Full setup instructions are in the [IT deployment guide](docs/IT_DEPLOYMENT.md).
 - `prompts/` prompt templates
 - `fixtures/` synthetic regression fixtures and demo material
 - `tests/` automated tests
-- `docs/` PRD, deployment notes, privacy note, troubleshooting, and demo runbook
+- `docs/` audience guides, deployment notes, privacy note, troubleshooting, and demo material
 
 ---
 
@@ -379,6 +349,28 @@ Run the app:
 ```bash
 sekretariat-copilot
 ```
+
+---
+
+## Why This Repo Is Free
+
+I am giving this away for free because the repo itself is useful.
+
+It helps schools and organisations:
+
+- evaluate a real local-first AI workflow
+- understand what a calm, governable AI product can look like
+- test a narrow use case before buying something large
+
+It also shows how I work:
+
+- from idea to product
+- from policy concern to system design
+- from UX to implementation
+- from GitHub proof to deployable demo
+
+The software is free.
+The deeper value is in adaptation, rollout, training, and institution-ready implementation.
 
 ---
 
