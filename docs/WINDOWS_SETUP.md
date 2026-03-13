@@ -1,5 +1,7 @@
 # Windows Setup
 
+If you want the full school IT path, start with the [IT deployment guide](IT_DEPLOYMENT.md).
+
 ## Requirements
 
 - Windows 11
