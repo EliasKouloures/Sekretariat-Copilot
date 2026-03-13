@@ -1,6 +1,6 @@
 # Sekretariat-Copilot
 
-![Sekretariat-Copilot banner](docs/assets/sekretariat-copilot-banner.svg)
+![Sekretariat-Copilot banner](docs/assets/sekretariat-copilot-banner.png)
 
 Free, local-first AI for school offices.
 
