@@ -423,3 +423,24 @@ It is not legal advice.
 It is not auto-pilot.
 
 It is a focused local-first administrative sidecar designed to save staff time while keeping people, oversight, and trust in the loop.
+
+---
+
+## Contact
+
+If you want to explore a pilot, a local-first rollout, or a custom version for your school or organisation, I would be glad to speak with you.
+
+**Elias Kouloures**
+US-Speed + EU-Safeguards + Award-Winning Creativity
+
+Homezone: Berlin, Germany
+
+Videocall: [calendar.app.google/ANb76KDuvg4J7LS28](https://calendar.app.google/ANb76KDuvg4J7LS28)
+
+E-Mail: [Elias.Kouloures@gmail.com](mailto:Elias.Kouloures@gmail.com)
+
+Website: [EliasKouloures.com](https://EliasKouloures.com)
+
+Videos: [YouTube.com/@EliasKouloures](https://YouTube.com/@EliasKouloures)
+
+Business: [LinkedIn.com/in/eliaskouloures/](https://LinkedIn.com/in/eliaskouloures/)
