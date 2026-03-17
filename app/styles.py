@@ -28,8 +28,12 @@ def load_styles() -> str:
         --sc-slate: #708090;
         --sc-surface: #F4F4F9;
         --sc-accent: #2E8B57;
+        --sc-accent-soft: rgba(46, 139, 87, 0.12);
         --sc-border: rgba(10, 25, 47, 0.16);
         --sc-soft: rgba(244, 244, 249, 0.82);
+        --sc-input-surface: rgba(255, 255, 255, 0.96);
+        --sc-input-border: rgba(10, 25, 47, 0.2);
+        --sc-dialog-shadow: 0 24px 60px rgba(10, 25, 47, 0.12);
         --sc-body: 16px;
         --sc-headline: 42px;
     }
@@ -120,6 +124,7 @@ def load_styles() -> str:
     .sc-warning {
         border-left: 4px solid #D4AF37;
         background: rgba(212, 175, 55, 0.12);
+        border-radius: 14px;
         padding: 12px 14px;
         margin: 8px 0;
     }
@@ -127,6 +132,7 @@ def load_styles() -> str:
     .sc-error {
         border-left: 4px solid #B22222;
         background: rgba(178, 34, 34, 0.1);
+        border-radius: 14px;
         padding: 12px 14px;
         margin: 8px 0;
     }
@@ -143,6 +149,12 @@ def load_styles() -> str:
         background: rgba(255, 255, 255, 0.8);
         color: var(--sc-navy);
         box-shadow: none;
+    }
+
+    .stButton > button:hover,
+    .stDownloadButton > button:hover {
+        border-color: rgba(46, 139, 87, 0.4);
+        color: var(--sc-navy);
     }
 
     .stButton > button[kind="primary"] {
@@ -174,8 +186,135 @@ def load_styles() -> str:
         color: var(--sc-navy);
     }
 
-    .stTextArea textarea, .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+    [data-testid="stWidgetLabel"] p,
+    .stTextArea label p,
+    .stFileUploader label p {
+        color: var(--sc-navy) !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.01em;
+    }
+
+    .stTextArea textarea,
+    .stTextInput input,
+    .stSelectbox div[data-baseweb="select"] {
+        border-radius: 18px !important;
+        border: 1px solid var(--sc-input-border) !important;
+        background: var(--sc-input-surface) !important;
+        color: var(--sc-navy) !important;
+        box-shadow: none !important;
+    }
+
+    .stTextArea textarea::placeholder,
+    .stTextInput input::placeholder {
+        color: rgba(112, 128, 144, 0.95) !important;
+    }
+
+    .stTextArea textarea:focus,
+    .stTextInput input:focus,
+    .stTextArea textarea:focus-visible,
+    .stTextInput input:focus-visible {
+        border-color: rgba(46, 139, 87, 0.55) !important;
+        box-shadow: 0 0 0 1px rgba(46, 139, 87, 0.15) !important;
+        outline: none !important;
+    }
+
+    [data-testid="stFileUploaderDropzone"] {
+        border-radius: 20px !important;
+        border: 1px dashed rgba(10, 25, 47, 0.25) !important;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(244, 244, 249, 0.9)) !important;
+        padding: 0.9rem 1rem !important;
+    }
+
+    [data-testid="stFileUploaderDropzone"] * {
+        color: var(--sc-navy) !important;
+    }
+
+    [data-testid="stFileUploaderDropzoneInstructions"] span,
+    [data-testid="stFileUploaderDropzoneInstructions"] small,
+    [data-testid="stFileUploaderDropzone"] small {
+        color: var(--sc-slate) !important;
+    }
+
+    [data-testid="stFileUploaderDropzone"] button {
+        position: relative;
+        min-width: 190px;
         border-radius: 16px !important;
+        border: 1px solid rgba(10, 25, 47, 0.2) !important;
+        background: rgba(255, 255, 255, 0.98) !important;
+        color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    [data-testid="stFileUploaderDropzone"] button::after {
+        content: "Open file explorer";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--sc-navy);
+        font-size: var(--sc-body);
+        font-weight: 600;
+    }
+
+    .streamlit-expanderHeader {
+        color: var(--sc-navy) !important;
+        font-weight: 600 !important;
+    }
+
+    [data-testid="stExpander"] {
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px solid var(--sc-border);
+        border-radius: 20px;
+        padding: 4px 10px;
+    }
+
+    [data-testid="stDialog"] [role="dialog"] {
+        border-radius: 28px;
+        border: 1px solid rgba(10, 25, 47, 0.12);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 244, 249, 0.96));
+        box-shadow: var(--sc-dialog-shadow);
+    }
+
+    [data-testid="stDialog"] [role="dialog"] > div {
+        padding-top: 0.35rem;
+    }
+
+    .sc-dialog-card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 244, 249, 0.96));
+        border: 1px solid rgba(10, 25, 47, 0.12);
+        border-radius: 22px;
+        padding: 18px 20px;
+        margin-bottom: 12px;
+    }
+
+    .sc-dialog-title {
+        color: var(--sc-navy);
+        font-size: 22px;
+        font-weight: 600;
+        line-height: 1.2;
+        margin-bottom: 8px;
+    }
+
+    .sc-dialog-copy {
+        color: var(--sc-slate);
+    }
+
+    .sc-dialog-questions {
+        color: var(--sc-navy);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        margin: 18px 0 10px;
+    }
+
+    [data-testid="stDialog"] [data-testid="stMarkdownContainer"] p,
+    [data-testid="stDialog"] [data-testid="stMarkdownContainer"] li,
+    [data-testid="stDialog"] [data-testid="stMarkdownContainer"] strong {
+        color: var(--sc-navy);
+    }
+
+    [data-testid="stDialog"] .stTextArea textarea {
+        min-height: 150px;
     }
     </style>
     """

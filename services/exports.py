@@ -40,11 +40,11 @@ class ExportService:
         if bundle.reply_set:
             sections.append("Subject lines:")
             sections.extend(f"- {line}" for line in bundle.reply_set.subject_lines)
-            sections.append("Hemingway-style:")
+            sections.append("Hemingway response:")
             sections.append(bundle.reply_set.variant_hemingway)
             sections.append("Corporate:")
             sections.append(bundle.reply_set.variant_corporate)
-            sections.append("Educator-first:")
+            sections.append("Empathic response:")
             sections.append(bundle.reply_set.variant_educator)
         if bundle.clarifying_questions:
             sections.append("Clarifying questions:")

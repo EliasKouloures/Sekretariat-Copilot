@@ -49,4 +49,4 @@ def test_output_service_normalises_counts_and_strips_reasoning() -> None:
     assert outputs.reply_set.subject_lines[0] == "Absence noted"
     assert outputs.reply_set.variant_hemingway == "Thank you. We have noted the absence."
     assert "Corporate" in outputs.copy_blocks
-    assert "Educator-first" in outputs.copy_blocks
+    assert "Empathic response" in outputs.copy_blocks

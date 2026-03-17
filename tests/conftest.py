@@ -27,10 +27,12 @@ class FakeBackend:
     def generate_reply_payload(self, context: dict[str, object]) -> dict[str, object]:
         student = "the pupil"
         facts_block = str(context.get("facts_block", ""))
+        operator_note = str(context.get("operator_note", "")).strip()
         for line in facts_block.splitlines():
             if line.lower().startswith("student name:"):
                 student = line.split(":", 1)[1].strip()
                 break
+        suffix = f" Operator note: {operator_note}" if operator_note else ""
         return {
             "subject_lines": [
                 f"Absence noted for {student}",
@@ -38,9 +40,9 @@ class FakeBackend:
                 "Thank you for your message",
             ],
             "message_variants": {
-                "hemingway": f"Thank you. We have noted the update for {student}.",
-                "corporate": f"Thank you for your message. We have recorded the update concerning {student}.",
-                "educator_first": f"Thank you for letting us know about {student}. We have noted the update.",
+                "hemingway": f"Thank you. We have noted the update for {student}.{suffix}",
+                "corporate": f"Thank you for your message. We have recorded the update concerning {student}.{suffix}",
+                "educator_first": f"Thank you for letting us know about {student}. We have noted the update.{suffix}",
             },
         }
 

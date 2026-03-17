@@ -17,10 +17,12 @@ Recommended action:
 Clarifying questions:
 {clarifying_questions}
 
+Operator note:
+{operator_note}
+
 Output requirements:
 - Subject lines: concise and suitable for a school office.
 - Hemingway-style: shortest, direct, active voice.
 - Corporate: polished, formal, executive-safe.
-- Educator-first: warm, clear, human.
+- Empathic response: warm, clear, human.
 - Do not mention AI or model limitations.
-

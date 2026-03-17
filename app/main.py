@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import streamlit as st
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from app.components import render_copy_button
 from app.styles import load_styles
 from core.config import load_config
 from core.errors import AppError
-from core.models import AnalysisPayload, ErrorCode, FileUpload
+from core.models import AnalysisPayload, AnalysisResult, ErrorCode, FileUpload, GeneratedOutputs
 from core.storage import Repository
+from core.text import normalise_whitespace
 from services.case_service import CaseService
 
 st.set_page_config(
@@ -25,19 +27,235 @@ def get_service() -> CaseService:
     return CaseService(config=config, repository=repository)
 
 
+def _initialise_state() -> None:
+    defaults = {
+        "case_id": None,
+        "analysis": None,
+        "outputs": None,
+        "error_message": None,
+        "pending_payload": None,
+        "pending_analysis": None,
+        "pending_case_id": None,
+        "show_clarification_dialog": False,
+        "clarification_answers_input": "",
+        "clarification_error": None,
+        "pasted_text_input": "",
+        "manual_note_input": "",
+        "file_uploader_nonce": 0,
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+
+
+def _build_payload(
+    *,
+    text_input: str,
+    note_input: str,
+    uploaded_files: list[UploadedFile] | None,
+    locale: str,
+) -> AnalysisPayload:
+    uploads = [
+        FileUpload(name=item.name, content=item.getvalue(), content_type=item.type)
+        for item in uploaded_files or []
+    ]
+    return AnalysisPayload(
+        text_input=text_input,
+        note_input=note_input,
+        files=uploads,
+        locale=locale,
+    )
+
+
+def _needs_clarification(analysis: AnalysisResult) -> bool:
+    if analysis.case.status.value == "blocked":
+        return False
+    return analysis.confidence_score < 90
+
+
+def _clarification_questions(analysis: AnalysisResult) -> list[str]:
+    questions: list[str] = []
+    for question in analysis.clarifying_questions:
+        if question and question not in questions:
+            questions.append(question)
+
+    if not questions and not analysis.extracted_record.student_name:
+        questions.append("Please confirm the pupil's full name.")
+    if not questions and analysis.case.task_type.value == "reply":
+        questions.append("What exact reply or reaction should the school office send?")
+    if not questions:
+        questions.append("What is the sender's main intent in one short sentence?")
+    if len(questions) < 5 and analysis.warnings:
+        questions.append("Please confirm any missing context, dates, or response constraints.")
+    if len(questions) < 5:
+        questions.append("Should the school office reply, and if so what outcome should that reply aim for?")
+    deduped: list[str] = []
+    for question in questions:
+        if question not in deduped:
+            deduped.append(question)
+    return deduped[:5]
+
+
+def _clear_pending_review(service: CaseService, *, remove_pending_case: bool) -> None:
+    pending_case_id = st.session_state.pending_case_id
+    if remove_pending_case and pending_case_id:
+        try:
+            service.reset_case(pending_case_id)
+        except AppError:
+            pass
+    st.session_state.pending_payload = None
+    st.session_state.pending_analysis = None
+    st.session_state.pending_case_id = None
+    st.session_state.show_clarification_dialog = False
+    st.session_state.clarification_answers_input = ""
+    st.session_state.clarification_error = None
+
+
+def _reset_ui(service: CaseService) -> None:
+    if st.session_state.case_id:
+        try:
+            service.reset_case(st.session_state.case_id)
+        except AppError:
+            pass
+    _clear_pending_review(service, remove_pending_case=True)
+    st.session_state.case_id = None
+    st.session_state.analysis = None
+    st.session_state.outputs = None
+    st.session_state.error_message = None
+    st.session_state.pasted_text_input = ""
+    st.session_state.manual_note_input = ""
+    st.session_state.file_uploader_nonce += 1
+
+
+def _store_completed_case(analysis: AnalysisResult, outputs: GeneratedOutputs) -> None:
+    st.session_state.case_id = analysis.case.id
+    st.session_state.analysis = analysis
+    st.session_state.outputs = outputs
+    st.session_state.error_message = None
+
+
+def _analyse_and_maybe_generate(
+    service: CaseService,
+    payload: AnalysisPayload,
+    *,
+    allow_clarification: bool,
+) -> None:
+    with st.spinner("Processing locally..."):
+        analysis = service.analyse_case(payload)
+    if allow_clarification and _needs_clarification(analysis):
+        st.session_state.case_id = None
+        st.session_state.analysis = None
+        st.session_state.outputs = None
+        st.session_state.pending_payload = payload
+        st.session_state.pending_analysis = analysis
+        st.session_state.pending_case_id = analysis.case.id
+        st.session_state.show_clarification_dialog = True
+        return
+    with st.spinner("Drafting responses locally..."):
+        outputs = service.generate_outputs(analysis.case.id, operator_note=payload.note_input)
+    _store_completed_case(analysis, outputs)
+
+
+@st.dialog("Need a bit more clarity")
+def render_clarification_dialog(service: CaseService) -> None:
+    analysis = st.session_state.pending_analysis
+    payload = st.session_state.pending_payload
+    if analysis is None or payload is None:
+        return
+
+    st.markdown(
+        """
+        <div class="sc-dialog-card">
+          <div class="sc-dialog-title">I want to make sure the draft is accurate before I continue.</div>
+          <div class="sc-dialog-copy">Some parts of the message are still unclear, incomplete, or below the 90% confidence threshold. Please answer the questions below, or cancel and adjust the inputs.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    issues: list[str] = []
+    if analysis.warnings:
+        issues.extend(analysis.warnings)
+    if analysis.missing_fields:
+        issues.append(
+            "Important details are still missing: "
+            + ", ".join(field.replace("_", " ") for field in analysis.missing_fields)
+            + "."
+        )
+    if issues:
+        for issue in issues[:5]:
+            st.markdown(f'<div class="sc-warning">{issue}</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="sc-dialog-questions">Clarifying questions</div>', unsafe_allow_html=True)
+    for index, question in enumerate(_clarification_questions(analysis), start=1):
+        st.markdown(f"**{index}.** {question}")
+
+    answers = st.text_area(
+        "Clarifying answers",
+        key="clarification_answers_input",
+        height=150,
+        placeholder="Type any missing names, dates, intent, response goals, or constraints here.",
+    )
+
+    if st.session_state.clarification_error:
+        st.markdown(
+            f'<div class="sc-error">{st.session_state.clarification_error}</div>',
+            unsafe_allow_html=True,
+        )
+
+    cancel_col, submit_col = st.columns(2)
+    with cancel_col:
+        if st.button("Cancel process", width="stretch"):
+            _clear_pending_review(service, remove_pending_case=True)
+            st.session_state.error_message = "The process was cancelled. You can adjust the inputs and try again."
+            st.rerun()
+    with submit_col:
+        if st.button("Submit answers", type="primary", width="stretch"):
+            if not answers.strip():
+                st.session_state.clarification_error = (
+                    "Please add at least one clarification before submitting."
+                )
+                st.rerun()
+
+            amended_note = normalise_whitespace(
+                "\n\n".join(
+                    filter(
+                        None,
+                        [
+                            payload.note_input,
+                            "Clarification answers:\n" + answers.strip(),
+                        ],
+                    )
+                )
+            )
+            updated_payload = AnalysisPayload(
+                text_input=payload.text_input,
+                note_input=amended_note,
+                files=payload.files,
+                locale=payload.locale,
+            )
+            st.session_state.manual_note_input = amended_note
+            _clear_pending_review(service, remove_pending_case=True)
+            try:
+                _analyse_and_maybe_generate(service, updated_payload, allow_clarification=True)
+            except AppError as exc:
+                if exc.code == ErrorCode.BACKEND_UNREACHABLE:
+                    st.session_state.error_message = (
+                        "The local model backend is unavailable. Start LM Studio or another compatible local server and try again."
+                    )
+                else:
+                    st.session_state.error_message = exc.message
+            st.rerun()
+
+
 def main() -> None:
     service = get_service()
     config = service.config
     st.markdown(load_styles(), unsafe_allow_html=True)
+    _initialise_state()
 
-    if "case_id" not in st.session_state:
-        st.session_state.case_id = None
-    if "analysis" not in st.session_state:
-        st.session_state.analysis = None
-    if "outputs" not in st.session_state:
-        st.session_state.outputs = None
-    if "error_message" not in st.session_state:
-        st.session_state.error_message = None
+    if st.session_state.show_clarification_dialog:
+        render_clarification_dialog(service)
 
     health = service.health_check()
     today_count = service.repository.count_cases_today()
@@ -72,30 +290,25 @@ def main() -> None:
 
     left_col, right_col = st.columns(2, gap="large")
     with left_col:
-        st.markdown('<div class="sc-panel">', unsafe_allow_html=True)
-        st.markdown('<div class="sc-panel-title">Workflow and Inputs</div>', unsafe_allow_html=True)
-        workflow = st.selectbox(
-            "Workflow",
-            options=["auto", "absence", "reply", "schedule", "triage"],
-            format_func=lambda item: "Auto-detect"
-            if item == "auto"
-            else item.replace("_", " ").title(),
-        )
-        if workflow != "auto":
-            st.markdown(
-                '<div class="sc-warning">Manual workflow override is enabled. Leave this on Auto-detect unless you intentionally want to force a workflow.</div>',
-                unsafe_allow_html=True,
-            )
+        st.markdown('<div class="sc-panel-title">Inputs</div>', unsafe_allow_html=True)
         text_input = st.text_area(
-            "Pasted text", height=180, placeholder="Paste a parent message, email, or note."
+            "Paste the message you received into here",
+            key="pasted_text_input",
+            height=280,
+            placeholder="Paste the message you received into here",
         )
         note_input = st.text_area(
-            "Manual note", height=140, placeholder="Type a phone note or admin summary."
+            "Paste and/or write a reaction and/or response to above message",
+            key="manual_note_input",
+            height=140,
+            placeholder="Paste and/or write a reaction and/or response to above message",
         )
+        uploader_key = f"supporting_files_input_{st.session_state.file_uploader_nonce}"
         uploaded_files = st.file_uploader(
-            "Upload supporting files",
+            "Upload additional context for your reaction and/or response to above message",
             type=["pdf", "png", "jpg", "jpeg"],
             accept_multiple_files=True,
+            key=uploader_key,
         )
         action_col, reset_col = st.columns([2, 1])
         with action_col:
@@ -103,42 +316,29 @@ def main() -> None:
         with reset_col:
             reset = st.button("Reset case", width="stretch")
 
-        if reset and st.session_state.case_id:
-            try:
-                service.reset_case(st.session_state.case_id)
-            except AppError:
-                pass
-            st.session_state.case_id = None
-            st.session_state.analysis = None
-            st.session_state.outputs = None
-            st.session_state.error_message = None
+        if reset:
+            _reset_ui(service)
             st.rerun()
 
         if process:
             st.session_state.error_message = None
-            uploads = [
-                FileUpload(name=item.name, content=item.getvalue(), content_type=item.type)
-                for item in uploaded_files or []
-            ]
-            payload = AnalysisPayload(
-                workflow_hint=None if workflow == "auto" else workflow,
+            payload = _build_payload(
                 text_input=text_input,
                 note_input=note_input,
-                files=uploads,
+                uploaded_files=uploaded_files,
                 locale=config.locale,
             )
             try:
-                with st.spinner("Processing locally..."):
-                    analysis = service.analyse_case(payload)
-                    outputs = service.generate_outputs(analysis.case.id)
-                st.session_state.case_id = analysis.case.id
-                st.session_state.analysis = analysis
-                st.session_state.outputs = outputs
+                _analyse_and_maybe_generate(service, payload, allow_clarification=True)
+                if st.session_state.show_clarification_dialog:
+                    st.rerun()
             except AppError as exc:
                 st.session_state.analysis = None
                 st.session_state.outputs = None
                 if exc.code == ErrorCode.BACKEND_UNREACHABLE:
-                    st.session_state.error_message = "The local model backend is unavailable. Start LM Studio or another compatible local server and try again."
+                    st.session_state.error_message = (
+                        "The local model backend is unavailable. Start LM Studio or another compatible local server and try again."
+                    )
                 else:
                     st.session_state.error_message = exc.message
 
@@ -147,15 +347,13 @@ def main() -> None:
                 f'<div class="sc-error">{st.session_state.error_message}</div>',
                 unsafe_allow_html=True,
             )
-        elif st.session_state.analysis is None:
+        elif st.session_state.analysis is None and st.session_state.pending_analysis is None:
             st.markdown(
-                '<p class="sc-muted">Choose a workflow or leave it on auto-detect, then add text, a note, or files.</p>',
+                '<p class="sc-muted">Paste the inbound message, add your intended reaction if needed, upload supporting context if useful, then process locally.</p>',
                 unsafe_allow_html=True,
             )
-        st.markdown("</div>", unsafe_allow_html=True)
 
     with right_col:
-        st.markdown('<div class="sc-panel">', unsafe_allow_html=True)
         st.markdown('<div class="sc-panel-title">Outputs</div>', unsafe_allow_html=True)
         analysis = st.session_state.analysis
         outputs = st.session_state.outputs
@@ -205,9 +403,9 @@ def main() -> None:
                 )
                 render_copy_button("Copy subject lines", subjects_text)
                 variants = [
-                    ("Hemingway-style", outputs.reply_set.variant_hemingway),
-                    ("Corporate", outputs.reply_set.variant_corporate),
-                    ("Educator-first", outputs.reply_set.variant_educator),
+                    ("Hemingway response", outputs.reply_set.variant_hemingway),
+                    ("Corporate response", outputs.reply_set.variant_corporate),
+                    ("Empathic response", outputs.reply_set.variant_educator),
                 ]
                 for label, value in variants:
                     st.subheader(label)
@@ -215,18 +413,6 @@ def main() -> None:
                         label, value=value, height=160, label_visibility="collapsed"
                     )
                     render_copy_button(f"Copy {label}", variant_text)
-
-            if outputs.clarifying_questions:
-                st.subheader("Clarifying questions")
-                questions_text = st.text_area(
-                    "Clarifying questions",
-                    value="\n".join(
-                        f"- {item.question_text}" for item in outputs.clarifying_questions
-                    ),
-                    height=120,
-                    label_visibility="collapsed",
-                )
-                render_copy_button("Copy clarifying questions", questions_text)
 
             with st.expander("Exports", expanded=False):
                 for export_format in ("text", "json", "csv"):
@@ -239,14 +425,12 @@ def main() -> None:
                     )
         else:
             st.markdown(
-                '<p class="sc-muted">Processed results will appear here once the case is ready for review.</p>',
+                '<p class="sc-muted">Your structured facts, internal brief, subject lines, and draft responses will appear here once the case is ready.</p>',
                 unsafe_allow_html=True,
             )
-        st.markdown("</div>", unsafe_allow_html=True)
 
     chart_col, list_col = st.columns(2, gap="large")
     with chart_col:
-        st.markdown('<div class="sc-panel">', unsafe_allow_html=True)
         st.markdown(
             '<div class="sc-panel-title">Cases by Workflow (7 Days)</div>', unsafe_allow_html=True
         )
@@ -274,10 +458,8 @@ def main() -> None:
             )
         else:
             st.markdown('<p class="sc-muted">No cases yet.</p>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     with list_col:
-        st.markdown('<div class="sc-panel">', unsafe_allow_html=True)
         st.markdown('<div class="sc-panel-title">Recent cases</div>', unsafe_allow_html=True)
         recent = service.repository.list_recent_cases(7)
         if recent:
@@ -292,7 +474,6 @@ def main() -> None:
                 st.divider()
         else:
             st.markdown('<p class="sc-muted">No recent cases yet.</p>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     with st.expander("Diagnostics", expanded=False):
         st.write(

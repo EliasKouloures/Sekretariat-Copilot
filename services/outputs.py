@@ -27,6 +27,7 @@ class OutputContext:
     missing_fields: list[str]
     warnings: list[str]
     source_types: list[str]
+    operator_note: str = ""
 
 
 class OutputService:
@@ -93,6 +94,7 @@ class OutputService:
                 "recommended_action": brief.recommended_action,
                 "clarifying_questions": "\n".join(question.question_text for question in questions)
                 or "None",
+                "operator_note": context.operator_note or "None",
             }
         )
         reply_set = self._normalise_reply_payload(payload, context)
@@ -176,9 +178,9 @@ class OutputService:
         }
         if reply_set:
             blocks["Subject lines"] = "\n".join(reply_set.subject_lines)
-            blocks["Hemingway-style"] = reply_set.variant_hemingway
+            blocks["Hemingway response"] = reply_set.variant_hemingway
             blocks["Corporate"] = reply_set.variant_corporate
-            blocks["Educator-first"] = reply_set.variant_educator
+            blocks["Empathic response"] = reply_set.variant_educator
         if questions:
             blocks["Clarifying questions"] = "\n".join(
                 f"- {item.question_text}" for item in questions

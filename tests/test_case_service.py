@@ -60,3 +60,29 @@ def test_empty_input_is_rejected(case_service) -> None:
         case_service.analyse_case(AnalysisPayload(locale="en-GB"))
 
     assert exc_info.value.code == ErrorCode.EMPTY_INPUT
+
+
+def test_manual_note_guides_output_without_overwriting_source_analysis(case_service) -> None:
+    payload = AnalysisPayload(
+        text_input=(
+            'Hello School Board,\n\n'
+            'This is the mother of student named "Johnny Knoxville" from class 8b.\n\n'
+            "I demand an explanation for the unfair homework and grading.\n\n"
+            "Regards,\nKaren Miller"
+        ),
+        note_input=(
+            "Reply with a friendly message. Ask Karen Miller to call teacher Mr. Nice "
+            "after 14:00 CET on 0160-123456789."
+        ),
+        locale="en-GB",
+    )
+
+    analysis = case_service.analyse_case(payload)
+    outputs = case_service.generate_outputs(analysis.case.id, operator_note=payload.note_input)
+
+    assert analysis.case.task_type == __import__("core.models", fromlist=["TaskType"]).TaskType.REPLY
+    assert analysis.extracted_record.student_name == "Johnny Knoxville"
+    assert analysis.extracted_record.guardian_name == "Karen Miller"
+    assert "Operator note" in (analysis.extracted_record.notes or "")
+    assert outputs.reply_set is not None
+    assert "Mr. Nice" in outputs.reply_set.variant_corporate

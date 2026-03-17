@@ -28,6 +28,7 @@ class AnalysisContext:
     combined_text: str
     source_mode: SourceMode
     assets: list[InputAsset]
+    operator_note: str | None = None
     workflow_hint: str | None = None
     ocr_used: bool = False
     low_quality: bool = False
@@ -67,7 +68,7 @@ class AnalysisService:
             meeting_topic=self.extract_meeting_topic(text)
             if task_type == TaskType.SCHEDULE
             else None,
-            notes=self.make_case_note(text, task_type),
+            notes=self.make_case_note(text, task_type, context.operator_note),
         )
 
         contradictions = self.detect_contradictions(task_type, dates, text)
@@ -373,11 +374,12 @@ class AnalysisService:
             )
         return questions
 
-    def make_case_note(self, text: str, task_type: TaskType) -> str:
+    def make_case_note(self, text: str, task_type: TaskType, operator_note: str | None = None) -> str:
         first_sentence = text.split(".")[0]
-        return normalise_whitespace(
-            f"{task_type.value.title()} case summary: {first_sentence[:120]}"
-        ).rstrip(".")
+        pieces = [f"{task_type.value.title()} case summary: {first_sentence[:120]}"]
+        if operator_note:
+            pieces.append(f"Operator note: {operator_note[:240]}")
+        return normalise_whitespace(" ".join(pieces)).rstrip(".")
 
     def _match_name(self, text: str, patterns: list[str]) -> str | None:
         for pattern in patterns:

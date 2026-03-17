@@ -47,7 +47,9 @@ class CaseService:
 
     def analyse_case(self, payload: AnalysisPayload) -> AnalysisResult:
         start = perf_counter()
-        combined_text = normalise_whitespace("\n\n".join(filter(None, [payload.text_input, payload.note_input])))
+        message_text = normalise_whitespace(payload.text_input or "")
+        operator_note = normalise_whitespace(payload.note_input or "")
+        combined_text = message_text
         source_mode = self._source_mode(payload)
         parsed_files = self.file_service.ingest(
             payload.files,
@@ -57,11 +59,16 @@ class CaseService:
         if parsed_files:
             combined_text = normalise_whitespace("\n\n".join(filter(None, [combined_text, parsed_files.combined_text])))
             source_mode = parsed_files.source_mode if source_mode == SourceMode.TEXT else SourceMode.MIXED
+        if not combined_text and operator_note:
+            combined_text = operator_note
         if not combined_text:
             self._audit_error(None, ErrorCode.EMPTY_INPUT, start, {"workflow_hint": payload.workflow_hint})
             raise AppError(ErrorCode.EMPTY_INPUT, "Please provide text, a note, or a supported file.")
 
-        fingerprint = hashlib.sha256(combined_text.encode("utf-8")).hexdigest()
+        fingerprint_source = normalise_whitespace(
+            "\n\n".join(filter(None, [message_text, operator_note, parsed_files.combined_text if parsed_files else ""]))
+        )
+        fingerprint = hashlib.sha256(fingerprint_source.encode("utf-8")).hexdigest()
         duplicate_case = self.repository.find_case_by_fingerprint(fingerprint)
         extra_warnings = list(parsed_files.warnings if parsed_files else [])
         if duplicate_case:
@@ -71,6 +78,7 @@ class CaseService:
             combined_text=combined_text,
             source_mode=source_mode,
             assets=parsed_files.assets if parsed_files else [],
+            operator_note=operator_note,
             workflow_hint=payload.workflow_hint,
             ocr_used=parsed_files.ocr_used if parsed_files else False,
             low_quality=parsed_files.low_quality if parsed_files else False,
@@ -99,7 +107,7 @@ class CaseService:
         )
         return result
 
-    def generate_outputs(self, case_id: str) -> GeneratedOutputs:
+    def generate_outputs(self, case_id: str, operator_note: str | None = None) -> GeneratedOutputs:
         start = perf_counter()
         bundle = self.repository.get_case_bundle(case_id)
         if bundle is None or bundle.extracted_record is None:
@@ -113,6 +121,7 @@ class CaseService:
             missing_fields=missing_fields,
             warnings=bundle.case.warnings,
             source_types=[asset.asset_type.value for asset in bundle.assets] or [bundle.case.source_mode.value],
+            operator_note=normalise_whitespace(operator_note or ""),
         )
         outputs = self.output_service.generate(output_context)
         self.repository.upsert_case_brief(outputs.case_brief)
