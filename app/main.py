@@ -4,7 +4,12 @@ import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from app.components import render_copy_button
-from app.state import apply_reset, queue_reset
+from app.state import (
+    apply_clarification_input_clear,
+    apply_reset,
+    queue_clarification_input_clear,
+    queue_reset,
+)
 from app.styles import load_styles
 from core.config import load_config
 from core.errors import AppError
@@ -40,6 +45,7 @@ def _initialise_state() -> None:
         "show_clarification_dialog": False,
         "clarification_answers_input": "",
         "clarification_error": None,
+        "clear_clarification_input_requested": False,
         "pasted_text_input": "",
         "manual_note_input": "",
         "file_uploader_nonce": 0,
@@ -109,7 +115,7 @@ def _clear_pending_review(service: CaseService, *, remove_pending_case: bool) ->
     st.session_state.pending_analysis = None
     st.session_state.pending_case_id = None
     st.session_state.show_clarification_dialog = False
-    st.session_state.clarification_answers_input = ""
+    queue_clarification_input_clear(st.session_state)
     st.session_state.clarification_error = None
 
 
@@ -159,6 +165,7 @@ def _analyse_and_maybe_generate(
         st.session_state.pending_payload = payload
         st.session_state.pending_analysis = analysis
         st.session_state.pending_case_id = analysis.case.id
+        queue_clarification_input_clear(st.session_state)
         st.session_state.show_clarification_dialog = True
         return
     with st.spinner("Drafting responses locally..."):
@@ -261,6 +268,8 @@ def main() -> None:
 
     if st.session_state.reset_requested:
         _perform_reset(service)
+    if st.session_state.clear_clarification_input_requested:
+        apply_clarification_input_clear(st.session_state)
 
     if st.session_state.show_clarification_dialog:
         render_clarification_dialog(service)
