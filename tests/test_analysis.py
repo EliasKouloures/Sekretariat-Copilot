@@ -72,3 +72,54 @@ def test_contradictions_reduce_confidence() -> None:
 
     assert any("mixes relative dates" in warning for warning in result.warnings)
     assert result.confidence_score < 85
+
+
+def test_complaint_reply_extracts_student_guardian_and_issue_summary() -> None:
+    service = AnalysisService()
+    result = service.analyse(
+        AnalysisContext(
+            combined_text=(
+                'Hello School Board,\n\n'
+                'This is the mother of student named "Johnny Knoxville" from class 8b of your Berlin Mitte School.\n\n'
+                "I am outraged over the amount of homework you are giving my son every day, which kills all of his quality time with his family.\n\n"
+                "On-top you are also giving him ever worsening grades, which is not fair because my son is the smartest kid in the world!!!\n\n"
+                "How dare you treat my son so badly!!!\n\n"
+                "I demand an explanation!11!!11!!\n\n"
+                "Regards,\nKaren Miller\n\n"
+                "Ask Ms. Miller to call teacher Mr. Madison: 030-123456789.\n\n"
+                "He'll happily discuss any questions she might have."
+            ),
+            source_mode=SourceMode.MIXED,
+            assets=[],
+            anchor_date=date(2026, 3, 17),
+        )
+    )
+
+    assert result.case.task_type == TaskType.REPLY
+    assert result.extracted_record.student_name == "Johnny Knoxville"
+    assert result.extracted_record.guardian_name == "Karen Miller"
+    assert result.extracted_record.class_name == "Class 8B"
+    assert result.extracted_record.reason == "Homework load and grading concern"
+    assert result.missing_fields == []
+
+
+def test_manual_workflow_override_warns_when_content_points_elsewhere() -> None:
+    service = AnalysisService()
+    result = service.analyse(
+        AnalysisContext(
+            combined_text=(
+                'Hello School Board,\n\n'
+                'This is the mother of student named "Johnny Knoxville" from class 8b.\n\n'
+                "I demand an explanation for the unfair homework and grading.\n\n"
+                "Regards,\nKaren Miller"
+            ),
+            source_mode=SourceMode.TEXT,
+            assets=[],
+            workflow_hint="schedule",
+            anchor_date=date(2026, 3, 17),
+        )
+    )
+
+    assert result.case.task_type == TaskType.SCHEDULE
+    assert result.extracted_record.student_name == "Johnny Knoxville"
+    assert any("Workflow override" in warning for warning in result.warnings)

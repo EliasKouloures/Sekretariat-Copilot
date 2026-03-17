@@ -19,6 +19,9 @@ from core.models import (
 )
 from core.text import normalise_whitespace, parse_dates, title_case_name
 
+NAME_WORD_RE = "[A-Za-z][A-Za-z'\\u2019-]+"
+NAME_PATTERN = rf"{NAME_WORD_RE}(?: {NAME_WORD_RE})+"
+
 
 @dataclass(slots=True)
 class AnalysisContext:
@@ -35,10 +38,18 @@ class AnalysisContext:
 class AnalysisService:
     def analyse(self, context: AnalysisContext) -> AnalysisResult:
         text = normalise_whitespace(context.combined_text)
-        task_type = self.detect_task_type(text, context.workflow_hint)
+        detected_task = self.detect_task_type(text)
+        warnings = list(context.extra_warnings or [])
+        task_type = detected_task
+        hinted_task = self.parse_workflow_hint(context.workflow_hint)
+        if hinted_task is not None:
+            task_type = hinted_task
+            if hinted_task != detected_task:
+                warnings.append(
+                    f"Workflow override '{hinted_task.value}' conflicts with the message, which looks like a '{detected_task.value}' task."
+                )
         multi_child = self.is_multi_child(text)
         dates, date_warnings = parse_dates(text, context.anchor_date)
-        warnings = list(context.extra_warnings or [])
         warnings.extend(date_warnings)
 
         extracted = ExtractedRecord(
@@ -109,37 +120,58 @@ class AnalysisService:
             source_summary=case.source_summary,
         )
 
-    def detect_task_type(self, text: str, workflow_hint: str | None) -> TaskType:
-        if workflow_hint:
-            try:
-                return TaskType(workflow_hint)
-            except ValueError:
-                pass
+    def parse_workflow_hint(self, workflow_hint: str | None) -> TaskType | None:
+        if not workflow_hint:
+            return None
+        try:
+            return TaskType(workflow_hint)
+        except ValueError:
+            return None
+
+    def detect_task_type(self, text: str) -> TaskType:
         lowered = text.lower()
-        if any(
-            keyword in lowered
-            for keyword in (
-                "absent",
-                "absence",
-                "off sick",
-                "stomach illness",
-                "won't be in",
-                "unwell",
-                "miss school",
-            )
-        ):
+        absence_score = self._keyword_score(
+            lowered,
+            ("absent", "absence", "off sick", "stomach illness", "won't be in", "unwell", "miss school"),
+        )
+        schedule_score = self._keyword_score(
+            lowered,
+            ("meeting", "schedule", "reschedule", "availability", "appointment"),
+        )
+        triage_score = self._keyword_score(
+            lowered,
+            ("form", "document", "attached", "application", "consent"),
+        )
+        reply_score = self._keyword_score(
+            lowered,
+            (
+                "reply",
+                "respond",
+                "response",
+                "explanation",
+                "outraged",
+                "complaint",
+                "concerned",
+                "unfair",
+                "how dare",
+                "demand",
+            ),
+        )
+        if "homework" in lowered:
+            reply_score += 2
+        if "grade" in lowered or "grades" in lowered:
+            reply_score += 2
+
+        if absence_score >= max(schedule_score, triage_score, reply_score) and absence_score > 0:
             return TaskType.ABSENCE
-        if any(
-            keyword in lowered
-            for keyword in ("meeting", "schedule", "reschedule", "availability", "appointment")
-        ):
+        if schedule_score >= max(absence_score, triage_score, reply_score) and schedule_score > 0:
             return TaskType.SCHEDULE
-        if any(
-            keyword in lowered
-            for keyword in ("form", "document", "attached", "application", "consent")
-        ):
+        if triage_score >= max(absence_score, schedule_score, reply_score) and triage_score > 0:
             return TaskType.TRIAGE
         return TaskType.REPLY
+
+    def _keyword_score(self, text: str, keywords: tuple[str, ...]) -> int:
+        return sum(1 for keyword in keywords if keyword in text)
 
     def is_multi_child(self, text: str) -> bool:
         lowered = text.lower()
@@ -158,21 +190,27 @@ class AnalysisService:
 
     def extract_student_name(self, text: str) -> str | None:
         patterns = [
-            r"(?:student|pupil)\s*[:\-]\s*([A-Z][a-z]+(?: [A-Z][a-z]+)+)",
-            r"for ([A-Z][a-z]+(?: [A-Z][a-z]+)+)",
-            r"([A-Z][a-z]+(?: [A-Z][a-z]+)+)\s+in\s+(?:Year|Class)\s+[0-9]{1,2}[A-Z]?\b",
-            r"([A-Z][a-z]+(?: [A-Z][a-z]+)+)\s+(?:will be|is|was)\s+(?:absent|off sick|not attending)",
-            r"([A-Z][a-z]+(?: [A-Z][a-z]+)+)\s+is\s+(?:unwell|ill|sick)",
+            rf"(?:student|pupil)\s*(?:name|named|called)?\s*[:\-]?\s*[\"“”']?({NAME_PATTERN})[\"“”']?",
+            rf"(?:student|pupil)\s+(?:named|called)\s*[\"“”']?({NAME_PATTERN})[\"“”']?",
+            rf"[\"“”']?({NAME_PATTERN})[\"“”']?\s+from\s+class\s+[0-9]{{1,2}}[A-Z]?\b",
+            rf"for\s+[\"“”']?({NAME_PATTERN})[\"“”']?",
+            rf"({NAME_PATTERN})\s+in\s+(?:Year|Class)\s+[0-9]{{1,2}}[A-Z]?\b",
+            rf"({NAME_PATTERN})\s+(?:will be|is|was)\s+(?:absent|off sick|not attending)",
+            rf"({NAME_PATTERN})\s+is\s+(?:unwell|ill|sick)",
         ]
         return self._match_name(text, patterns)
 
     def extract_guardian_name(self, text: str) -> str | None:
         patterns = [
-            r"(?:kind regards|best regards|regards|many thanks|thanks|sincerely),?\s*\n?([A-Z][a-z]+(?: [A-Z][a-z]+)+)\b",
-            r"i am ([A-Z][a-z]+(?: [A-Z][a-z]+)+)",
-            r"from\s*:\s*([A-Z][a-z]+(?: [A-Z][a-z]+)+)",
+            rf"(?:kind regards|best regards|regards|many thanks|thanks|sincerely),?\s*\n+\s*({NAME_PATTERN})(?=\s*(?:\n|$))",
+            rf"(?:mother|father|parent|guardian)\s+name\s*[:\-]\s*({NAME_PATTERN})",
+            rf"i am\s+({NAME_PATTERN})",
+            rf"from\s*:\s*({NAME_PATTERN})",
         ]
-        return self._match_name(text, patterns)
+        extracted = self._match_name(text, patterns)
+        if extracted:
+            return extracted
+        return self._signature_name(text)
 
     def extract_class_name(self, text: str) -> str | None:
         match = re.search(r"\b(?:Year|Class)\s+[0-9]{1,2}[A-Z]?\b", text, flags=re.IGNORECASE)
@@ -185,6 +223,23 @@ class AnalysisService:
         return raw
 
     def extract_reason(self, text: str, task_type: TaskType) -> str | None:
+        lowered = text.lower()
+        if task_type == TaskType.REPLY:
+            if "homework" in lowered and ("grade" in lowered or "grades" in lowered):
+                return "Homework load and grading concern"
+            if "homework" in lowered:
+                return "Homework concern"
+            if "grade" in lowered or "grades" in lowered:
+                return "Grading concern"
+            complaint_patterns = [
+                r"(?:complaint|concern)\s+about\s+([A-Za-z0-9 ,'-]{4,80})",
+                r"(?:outraged|unhappy|concerned)\s+about\s+([A-Za-z0-9 ,'-]{4,80})",
+            ]
+            for pattern in complaint_patterns:
+                match = re.search(pattern, text, flags=re.IGNORECASE)
+                if match:
+                    return normalise_whitespace(match.group(1)).rstrip(".")
+            return None
         if task_type == TaskType.SCHEDULE:
             return None
         patterns = [
@@ -326,7 +381,17 @@ class AnalysisService:
 
     def _match_name(self, text: str, patterns: list[str]) -> str | None:
         for pattern in patterns:
-            match = re.search(pattern, text, flags=re.MULTILINE)
+            match = re.search(pattern, text, flags=re.MULTILINE | re.IGNORECASE)
             if match:
                 return title_case_name(match.group(1))
+        return None
+
+    def _signature_name(self, text: str) -> str | None:
+        lines = [line.strip(" ,") for line in text.splitlines() if line.strip()]
+        skip_prefixes = ("ask ", "call ", "phone ", "please ", "he'll", "she'll", "teacher ", "mr. ", "ms. ")
+        for line in reversed(lines):
+            if line.lower().startswith(skip_prefixes):
+                continue
+            if re.fullmatch(NAME_PATTERN, line, flags=re.IGNORECASE):
+                return title_case_name(line)
         return None

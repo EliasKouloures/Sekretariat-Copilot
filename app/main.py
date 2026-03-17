@@ -81,6 +81,11 @@ def main() -> None:
             if item == "auto"
             else item.replace("_", " ").title(),
         )
+        if workflow != "auto":
+            st.markdown(
+                '<div class="sc-warning">Manual workflow override is enabled. Leave this on Auto-detect unless you intentionally want to force a workflow.</div>',
+                unsafe_allow_html=True,
+            )
         text_input = st.text_area(
             "Pasted text", height=180, placeholder="Paste a parent message, email, or note."
         )
