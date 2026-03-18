@@ -33,6 +33,7 @@ That is the whole loop.
 
 - faster drafting
 - reusable prompt standards
+- six built-in starter prompts for common education tasks
 - local history for repeat tasks
 - no default cloud dependency
 - no automatic outbound action
@@ -66,7 +67,7 @@ It is not:
 
 1. one machine
 2. one staff owner
-3. three saved prompts
+3. the six built-in prompts first
 4. short text-first tasks
 5. clear internal review after a small trial
 

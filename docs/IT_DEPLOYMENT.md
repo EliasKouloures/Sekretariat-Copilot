@@ -215,7 +215,7 @@ Start narrow.
 
 Recommended first pilot:
 
-1. three saved prompts only
+1. the six built-in prompts first
 2. text-first work
 3. one school office owner
 4. synthetic material first

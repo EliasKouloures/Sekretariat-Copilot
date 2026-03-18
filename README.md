@@ -124,6 +124,8 @@ The right-hand side is a local prompt library.
 - selecting a saved prompt loads its full text into the lower editor
 - the lower editor is always editable
 - `Save Prompt` writes the prompt into the local library
+- the built-in prompts are shown first, in their curated order
+- any custom prompts appear after the built-in prompts
 
 Important:
 When you save a brand-new prompt, the app uses the **first non-empty line** as the prompt title.
@@ -142,15 +144,18 @@ Each item shows a short purpose label so users can quickly reopen:
 The app stores the local conversation context, prompt text, output text, and file names in SQLite so the user can reopen a previous run.
 It does **not** need to store uploaded file bodies to make history work.
 
-## Recommended First Use
+## Built-In Prompts
 
-Start with three saved prompts only:
+The MVP now ships with these six built-in prompts, in this order:
 
-1. `Draft a calm reply`
-2. `Summarise key points`
-3. `Turn notes into action list`
+1. `E-Mail to Parents/Students`
+2. `Extract Text from PDF/Image`
+3. `Student Support Assistant`
+4. `5E Lesson Plan Creator`
+5. `School Newsletter`
+6. `Social Media Post Generator`
 
-That is enough for a clean first pilot.
+This gives schools a narrow but flexible starting set without forcing staff to invent prompts from scratch.
 
 ## Quick Start For IT
 

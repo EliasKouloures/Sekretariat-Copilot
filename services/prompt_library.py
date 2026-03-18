@@ -2,8 +2,15 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 from core.models import PromptTemplate, utc_now
+
+LEGACY_DEFAULT_PROMPTS = {
+    "Draft a calm reply": "Draft a calm, professional reply in British English. Keep it clear, polite, and easy to copy into an email.",
+    "Summarise key points": "Summarise the key facts, actions, dates, and risks in short plain English. Use short paragraphs.",
+    "Turn notes into action list": "Turn the context into a short action list with owners, follow-ups, and any missing information that should be clarified.",
+}
 
 
 class PromptLibraryService:
@@ -16,6 +23,7 @@ class PromptLibraryService:
         self.seed_path = Path(seed_path)
         self.library_path.parent.mkdir(parents=True, exist_ok=True)
         self._ensure_library()
+        self._sync_seed_prompts()
 
     def list_prompts(self) -> list[PromptTemplate]:
         items = self._read_library()
@@ -27,7 +35,7 @@ class PromptLibraryService:
             )
             for item in items
         ]
-        return sorted(prompts, key=lambda item: item.title.lower())
+        return prompts
 
     def get_prompt(self, title: str) -> PromptTemplate | None:
         for prompt in self.list_prompts():
@@ -65,17 +73,54 @@ class PromptLibraryService:
             return
         self._write_library([])
 
+    def _sync_seed_prompts(self) -> None:
+        if not self.seed_path.exists():
+            return
+        existing = self._read_library()
+        seed_items = self._read_json_file(self.seed_path)
+        if not seed_items:
+            return
+        existing_map = {
+            str(item["title"]): {"title": str(item["title"]), "body": str(item["body"])}
+            for item in existing
+            if self._keep_existing_item(item)
+        }
+        ordered_items: list[dict[str, str]] = []
+
+        for seed_item in seed_items:
+            title = str(seed_item["title"])
+            if title in existing_map:
+                ordered_items.append(existing_map.pop(title))
+            else:
+                ordered_items.append(seed_item)
+
+        ordered_items.extend(existing_map.values())
+        if ordered_items != existing:
+            self._write_library(ordered_items)
+
     def _read_library(self) -> list[dict[str, str]]:
         try:
-            raw_items = json.loads(self.library_path.read_text(encoding="utf-8"))
+            raw_items = self._read_json_file(self.library_path)
         except FileNotFoundError:
             self._ensure_library()
-            raw_items = json.loads(self.library_path.read_text(encoding="utf-8"))
+            raw_items = self._read_json_file(self.library_path)
         return [
             {"title": str(item["title"]), "body": str(item["body"])}
             for item in raw_items
             if isinstance(item, dict) and "title" in item and "body" in item
         ]
 
+    def _read_json_file(self, path: Path) -> list[dict[str, str]]:
+        raw = cast(list[dict[str, Any]], json.loads(path.read_text(encoding="utf-8")))
+        return [{"title": str(item["title"]), "body": str(item["body"])} for item in raw]
+
     def _write_library(self, items: list[dict[str, str]]) -> None:
         self.library_path.write_text(json.dumps(items, indent=2), encoding="utf-8")
+
+    def _keep_existing_item(self, item: dict[str, str]) -> bool:
+        title = str(item["title"])
+        body = str(item["body"])
+        legacy_body = LEGACY_DEFAULT_PROMPTS.get(title)
+        if legacy_body is None:
+            return True
+        return body.strip() != legacy_body.strip()
