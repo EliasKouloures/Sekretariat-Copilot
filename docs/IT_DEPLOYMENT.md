@@ -2,7 +2,7 @@
 
 This guide is for school IT teams, DPO reviewers, and technical operators.
 
-Secure-Secr-AI-tery is a local desktop web app with:
+Secure-AI-ssistant is a local desktop web app with:
 
 - a Streamlit front end
 - a Python service layer
@@ -31,7 +31,7 @@ Recommended first deployment:
 
 ```mermaid
 flowchart LR
-    A["Operator browser"] --> B["Secure-Secr-AI-tery"]
+    A["Operator browser"] --> B["Secure-AI-ssistant"]
     B --> C["Python services"]
     C --> D["SQLite"]
     C --> E["LM Studio local server"]
@@ -68,7 +68,7 @@ Why:
 
 From top to bottom in LM Studio:
 
-- `Preset`: save one as `Secure-Secr-AI-tery Stable`
+- `Preset`: save one as `Secure-AI-ssistant Stable`
 - `System Prompt`: leave empty
 - `Temperature`: `0.2`
 - `Limit Response Length`: `Off`
@@ -88,12 +88,12 @@ These settings favour stable office writing over creativity.
 ## Get The Repo
 
 ```bash
-git clone https://github.com/EliasKouloures/secure-secr-ai-tery.git
-cd secure-secr-ai-tery
+git clone https://github.com/EliasKouloures/secure-ai-ssistant.git
+cd secure-ai-ssistant
 ```
 
-The GitHub repo slug is `secure-secr-ai-tery`.
-The product name inside the app is `Secure-Secr-AI-tery`.
+The GitHub repo slug is `secure-ai-ssistant`.
+The product name inside the app is `Secure-AI-ssistant`.
 
 ## macOS Install
 
@@ -133,7 +133,7 @@ Copy-Item config.example.toml config.toml
 
 ```toml
 [app]
-title = "Secure-Secr-AI-tery"
+title = "Secure-AI-ssistant"
 bind_host = "127.0.0.1"
 bind_port = 8501
 
@@ -158,19 +158,19 @@ Important:
 Preferred command:
 
 ```bash
-secure-secr-ai-tery
-```
-
-Legacy fallback:
-
-```bash
-sekretariat-copilot
+secure-ai-ssistant
 ```
 
 Direct path fallback:
 
 ```bash
-.venv/bin/secure-secr-ai-tery
+.venv/bin/secure-ai-ssistant
+```
+
+If the command is not found yet, reinstall with:
+
+```bash
+python -m pip install -e '.[dev]'
 ```
 
 ## What Operators See

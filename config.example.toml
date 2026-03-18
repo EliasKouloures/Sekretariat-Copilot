@@ -1,9 +1,9 @@
 [app]
-title = "Secure-Secr-AI-tery"
+title = "Secure-AI-ssistant"
 locale = "en-GB"
 bind_host = "127.0.0.1"
 bind_port = 8501
-database_path = "data/sekretariat.db"
+database_path = "data/secure-ai-ssistant.db"
 
 [backend]
 provider_name = "lm_studio"

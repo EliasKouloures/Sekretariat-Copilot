@@ -23,13 +23,7 @@ Try:
 Use:
 
 ```bash
-.venv/bin/secure-secr-ai-tery
-```
-
-Legacy fallback:
-
-```bash
-.venv/bin/sekretariat-copilot
+.venv/bin/secure-ai-ssistant
 ```
 
 ## Save Prompt did not create the title I expected

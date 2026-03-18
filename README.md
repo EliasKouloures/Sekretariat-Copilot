@@ -1,10 +1,10 @@
-# Secure-Secr-AI-tery
+# Secure-AI-ssistant
 
-![Secure-Secr-AI-tery banner](docs/assets/secure-secr-ai-tery-banner.png)
+![Secure-AI-ssistant banner](docs/assets/secure-ai-ssistant-banner.png)
 
 **Your Free, Private & Offline AI Assistant.**
 
-Secure-Secr-AI-tery is a calm local workspace for school offices, school leaders, educators, and support teams.
+Secure-AI-ssistant is a calm local workspace for school offices, school leaders, educators, and support teams.
 
 It gives staff one clean screen for three things:
 
@@ -54,7 +54,7 @@ Most of that work is not complex.
 It is repetitive.
 It still needs judgement.
 
-Secure-Secr-AI-tery helps staff:
+Secure-AI-ssistant helps staff:
 
 - draft calm replies
 - summarise meetings
@@ -168,13 +168,13 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e '.[dev]'
 cp config.example.toml config.toml
-secure-secr-ai-tery
+secure-ai-ssistant
 ```
 
-If the new launcher name is not found yet, the legacy fallback still works:
+If the launcher name is not found yet, use the direct path:
 
 ```bash
-sekretariat-copilot
+.venv/bin/secure-ai-ssistant
 ```
 
 ## Recommended LM Studio Model
@@ -204,7 +204,7 @@ Recommended LM Studio inference settings are documented in the [IT Deployment Gu
 - It is designed for human-reviewed drafting, not autonomous action.
 - Uploaded files are single-file in the current UI by design, to keep the workflow simple.
 - Prompt titles for new prompts are derived automatically from the first non-empty line.
-- The GitHub repo slug is `secure-secr-ai-tery`, while the visible product name is `Secure-Secr-AI-tery`.
+- The GitHub repo slug is `secure-ai-ssistant`, while the visible product name is `Secure-AI-ssistant`.
 
 ## Related Documents
 

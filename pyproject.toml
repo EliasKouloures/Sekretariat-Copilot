@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "secure-secr-ai-tery"
+name = "secure-ai-ssistant"
 version = "0.1.0"
 description = "Private, offline-friendly prompt workspace for European schools and school support teams."
 readme = "README.md"
@@ -28,8 +28,7 @@ dev = [
 ]
 
 [project.scripts]
-secure-secr-ai-tery = "app.launcher:main"
-sekretariat-copilot = "app.launcher:main"
+secure-ai-ssistant = "app.launcher:main"
 
 [tool.setuptools]
 include-package-data = true

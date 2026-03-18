@@ -71,7 +71,7 @@ class FakeBackend:
 @pytest.fixture()
 def app_config(tmp_path: Path) -> AppConfig:
     return AppConfig(
-        title="Secure-Secr-AI-tery",
+        title="Secure-AI-ssistant",
         locale="en-GB",
         bind_host="127.0.0.1",
         bind_port=8501,
@@ -81,7 +81,7 @@ def app_config(tmp_path: Path) -> AppConfig:
             model_id="fake-local-model",
             supports_vision=True,
         ),
-        storage=StorageConfig(database_path=str(tmp_path / "secure-secr-ai-tery.db")),
+        storage=StorageConfig(database_path=str(tmp_path / "secure-ai-ssistant.db")),
         limits=InputLimits(),
         features=FeatureFlags(),
     )

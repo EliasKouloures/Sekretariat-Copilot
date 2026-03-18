@@ -23,7 +23,7 @@ class BackendProfile:
 
 @dataclass(slots=True)
 class StorageConfig:
-    database_path: str = "data/sekretariat.db"
+    database_path: str = "data/secure-ai-ssistant.db"
     retain_audit_days: int = 30
     save_raw_inputs: bool = False
 
@@ -44,7 +44,7 @@ class FeatureFlags:
 
 @dataclass(slots=True)
 class AppConfig:
-    title: str = "Secure-Secr-AI-tery"
+    title: str = "Secure-AI-ssistant"
     locale: str = "en-GB"
     bind_host: str = "127.0.0.1"
     bind_port: int = 8501
@@ -55,27 +55,27 @@ class AppConfig:
 
 
 ENV_MAP: dict[str, tuple[str, str]] = {
-    "SEKRETARIAT_TITLE": ("app", "title"),
-    "SEKRETARIAT_BIND_HOST": ("app", "bind_host"),
-    "SEKRETARIAT_BIND_PORT": ("app", "bind_port"),
-    "SEKRETARIAT_DATABASE_PATH": ("app", "database_path"),
-    "SEKRETARIAT_BACKEND_PROVIDER": ("backend", "provider_name"),
-    "SEKRETARIAT_BACKEND_BASE_URL": ("backend", "base_url"),
-    "SEKRETARIAT_BACKEND_MODEL_ID": ("backend", "model_id"),
-    "SEKRETARIAT_BACKEND_TEMPERATURE": ("backend", "temperature"),
-    "SEKRETARIAT_BACKEND_MAX_TOKENS": ("backend", "max_tokens"),
-    "SEKRETARIAT_BACKEND_CONTEXT_LIMIT": ("backend", "context_limit"),
-    "SEKRETARIAT_BACKEND_TIMEOUT_SECONDS": ("backend", "timeout_seconds"),
-    "SEKRETARIAT_BACKEND_SUPPORTS_VISION": ("backend", "supports_vision"),
-    "SEKRETARIAT_BACKEND_API_KEY": ("backend", "api_key"),
-    "SEKRETARIAT_RETAIN_AUDIT_DAYS": ("storage", "retain_audit_days"),
-    "SEKRETARIAT_SAVE_RAW_INPUTS": ("storage", "save_raw_inputs"),
-    "SEKRETARIAT_MAX_ASSETS": ("limits", "max_assets"),
-    "SEKRETARIAT_MAX_FILE_MB": ("limits", "max_file_mb"),
-    "SEKRETARIAT_MAX_PDF_PAGES": ("limits", "max_pdf_pages"),
-    "SEKRETARIAT_ENABLE_INTRANET_MODE": ("features", "enable_intranet_mode"),
-    "SEKRETARIAT_ALLOW_EXPORT_BUNDLE": ("features", "allow_export_bundle"),
-    "SEKRETARIAT_SHOW_PRIVACY_PANEL": ("features", "show_privacy_panel"),
+    "SECURE_AI_SSISTANT_TITLE": ("app", "title"),
+    "SECURE_AI_SSISTANT_BIND_HOST": ("app", "bind_host"),
+    "SECURE_AI_SSISTANT_BIND_PORT": ("app", "bind_port"),
+    "SECURE_AI_SSISTANT_DATABASE_PATH": ("app", "database_path"),
+    "SECURE_AI_SSISTANT_BACKEND_PROVIDER": ("backend", "provider_name"),
+    "SECURE_AI_SSISTANT_BACKEND_BASE_URL": ("backend", "base_url"),
+    "SECURE_AI_SSISTANT_BACKEND_MODEL_ID": ("backend", "model_id"),
+    "SECURE_AI_SSISTANT_BACKEND_TEMPERATURE": ("backend", "temperature"),
+    "SECURE_AI_SSISTANT_BACKEND_MAX_TOKENS": ("backend", "max_tokens"),
+    "SECURE_AI_SSISTANT_BACKEND_CONTEXT_LIMIT": ("backend", "context_limit"),
+    "SECURE_AI_SSISTANT_BACKEND_TIMEOUT_SECONDS": ("backend", "timeout_seconds"),
+    "SECURE_AI_SSISTANT_BACKEND_SUPPORTS_VISION": ("backend", "supports_vision"),
+    "SECURE_AI_SSISTANT_BACKEND_API_KEY": ("backend", "api_key"),
+    "SECURE_AI_SSISTANT_RETAIN_AUDIT_DAYS": ("storage", "retain_audit_days"),
+    "SECURE_AI_SSISTANT_SAVE_RAW_INPUTS": ("storage", "save_raw_inputs"),
+    "SECURE_AI_SSISTANT_MAX_ASSETS": ("limits", "max_assets"),
+    "SECURE_AI_SSISTANT_MAX_FILE_MB": ("limits", "max_file_mb"),
+    "SECURE_AI_SSISTANT_MAX_PDF_PAGES": ("limits", "max_pdf_pages"),
+    "SECURE_AI_SSISTANT_ENABLE_INTRANET_MODE": ("features", "enable_intranet_mode"),
+    "SECURE_AI_SSISTANT_ALLOW_EXPORT_BUNDLE": ("features", "allow_export_bundle"),
+    "SECURE_AI_SSISTANT_SHOW_PRIVACY_PANEL": ("features", "show_privacy_panel"),
 }
 
 
@@ -116,7 +116,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
         target[option] = env_map[env_key]
 
     storage = StorageConfig(
-        database_path=str(app_section.get("database_path", storage_section.get("database_path", "data/sekretariat.db"))),
+        database_path=str(app_section.get("database_path", storage_section.get("database_path", "data/secure-ai-ssistant.db"))),
         retain_audit_days=_coerce_int(storage_section.get("retain_audit_days", 30)),
         save_raw_inputs=_coerce_bool(storage_section.get("save_raw_inputs", False)),
     )
@@ -142,7 +142,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
         show_privacy_panel=_coerce_bool(features_section.get("show_privacy_panel", True)),
     )
     return AppConfig(
-        title=str(app_section.get("title", "Secure-Secr-AI-tery")),
+        title=str(app_section.get("title", "Secure-AI-ssistant")),
         locale=str(app_section.get("locale", "en-GB")),
         bind_host=str(app_section.get("bind_host", "127.0.0.1")),
         bind_port=_coerce_int(app_section.get("bind_port", 8501)),

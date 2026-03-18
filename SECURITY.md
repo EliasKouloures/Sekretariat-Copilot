@@ -1,6 +1,6 @@
 # Security Policy
 
-Secure-Secr-AI-tery is a local-first AI workspace for European schools and school support teams.
+Secure-AI-ssistant is a local-first AI workspace for European schools and school support teams.
 
 Security and trust matter.
 

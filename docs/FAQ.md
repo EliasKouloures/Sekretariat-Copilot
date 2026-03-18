@@ -35,11 +35,11 @@ If the user chooses `Add new Prompt`, the first non-empty line becomes the saved
 Because the app is aimed at non-technical users.
 One editor is easier than two.
 
-## Why is the GitHub repo called secure-secr-ai-tery?
+## Why is the GitHub repo called secure-ai-ssistant?
 
 GitHub repo slugs work best in lowercase with hyphens.
 That keeps the clone path, package name, and command name simple.
-The visible product name is `Secure-Secr-AI-tery`.
+The visible product name is `Secure-AI-ssistant`.
 
 ## Is this automatically GDPR compliant?
 

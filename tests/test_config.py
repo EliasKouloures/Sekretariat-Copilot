@@ -30,8 +30,8 @@ def test_load_config_reads_file_and_env_override(tmp_path: Path) -> None:
     config = load_config(
         config_path,
         env={
-            "SEKRETARIAT_BACKEND_MODEL_ID": "env-model",
-            "SEKRETARIAT_BACKEND_SUPPORTS_VISION": "true",
+            "SECURE_AI_SSISTANT_BACKEND_MODEL_ID": "env-model",
+            "SECURE_AI_SSISTANT_BACKEND_SUPPORTS_VISION": "true",
         },
     )
 

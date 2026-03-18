@@ -1,6 +1,6 @@
 # Privacy Notes
 
-Secure-Secr-AI-tery is designed for a local-first privacy posture.
+Secure-AI-ssistant is designed for a local-first privacy posture.
 
 ## Default Processing Model
 

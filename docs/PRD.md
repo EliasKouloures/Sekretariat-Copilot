@@ -1,8 +1,8 @@
-# Secure-Secr-AI-tery Product Brief
+# Secure-AI-ssistant Product Brief
 
 ## Product
 
-Secure-Secr-AI-tery is a private, offline-friendly AI workspace for European schools and school support teams.
+Secure-AI-ssistant is a private, offline-friendly AI workspace for European schools and school support teams.
 
 ## Core UX
 

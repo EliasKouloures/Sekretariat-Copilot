@@ -46,25 +46,13 @@ Copy-Item config.example.toml config.toml
 7. Run the app:
 
 ```powershell
-secure-secr-ai-tery
+secure-ai-ssistant
 ```
 
-Legacy fallback:
+If the command is not found, use the direct launcher:
 
 ```powershell
-sekretariat-copilot
-```
-
-Direct launcher fallback:
-
-```powershell
-.venv\Scripts\secure-secr-ai-tery.exe
-```
-
-Legacy direct launcher:
-
-```powershell
-.venv\Scripts\sekretariat-copilot.exe
+.venv\Scripts\secure-ai-ssistant.exe
 ```
 
 ## First-Run Check
