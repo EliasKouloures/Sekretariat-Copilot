@@ -191,6 +191,7 @@ def load_styles() -> str:
         font-weight: 700 !important;
         letter-spacing: -0.02em !important;
         padding: 0 18px !important;
+        font-family: "Aptos", "Segoe UI", sans-serif !important;
     }
 
     .stButton > button:hover,
@@ -208,6 +209,7 @@ def load_styles() -> str:
         font-weight: 700 !important;
         line-height: 1.1 !important;
         color: var(--ssa-navy) !important;
+        font-family: "Aptos", "Segoe UI", sans-serif !important;
     }
 
     .stButton > button[kind="primary"],
@@ -224,7 +226,11 @@ def load_styles() -> str:
         color: rgba(244, 244, 249, 0.98) !important;
     }
 
-    .ssa-history-list .stButton > button {
+    .st-key-history_cards .stButton > button,
+    .st-key-history_cards button[kind="secondary"],
+    .st-key-history_cards button[kind="secondary"]:hover,
+    .st-key-history_cards button[kind="secondary"]:focus,
+    .st-key-history_cards button[kind="secondary"]:active {
         min-height: 84px !important;
         height: auto !important;
         font-size: 16px !important;
@@ -237,9 +243,12 @@ def load_styles() -> str:
         background:
             linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 244, 249, 0.92)) !important;
         color: var(--ssa-navy) !important;
+        border: 2px solid var(--ssa-border) !important;
+        box-shadow: none !important;
     }
 
-    .ssa-history-list .stButton > button p {
+    .st-key-history_cards .stButton > button p,
+    .st-key-history_cards button[kind="secondary"] p {
         text-align: left;
         white-space: normal !important;
         font-size: 16px !important;
@@ -250,21 +259,22 @@ def load_styles() -> str:
         overflow: hidden !important;
     }
 
-    [data-testid="stFileUploaderDropzone"] {
+    .st-key-upload_button_shell [data-testid="stFileUploaderDropzone"] {
         min-height: 60px;
         border-radius: 22px !important;
         border: 2px solid var(--ssa-border) !important;
         background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 244, 249, 0.9)) !important;
+            linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 244, 249, 0.92)) !important;
         padding: 0 !important;
         position: relative !important;
         overflow: hidden !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        box-shadow: none !important;
     }
 
-    [data-testid="stFileUploaderDropzone"]::after {
+    .st-key-upload_button_shell [data-testid="stFileUploaderDropzone"]::after {
         content: "Add File";
         position: absolute;
         inset: 0;
@@ -276,15 +286,17 @@ def load_styles() -> str:
         font-weight: 700;
         letter-spacing: -0.02em;
         pointer-events: none;
+        font-family: "Aptos", "Segoe UI", sans-serif !important;
     }
 
-    [data-testid="stFileUploaderDropzoneInstructions"],
-    [data-testid="stFileUploader"] small,
-    [data-testid="stFileUploader"] svg {
+    .st-key-upload_button_shell [data-testid="stFileUploaderDropzoneInstructions"],
+    .st-key-upload_button_shell [data-testid="stFileUploader"] small,
+    .st-key-upload_button_shell [data-testid="stFileUploader"] svg,
+    .st-key-upload_button_shell [data-testid="stFileUploader"] [data-testid="stFileUploaderFileName"] {
         display: none !important;
     }
 
-    [data-testid="stFileUploaderDropzone"] button {
+    .st-key-upload_button_shell [data-testid="stFileUploaderDropzone"] button {
         width: 100%;
         min-height: 58px;
         border-radius: 20px !important;
@@ -298,11 +310,15 @@ def load_styles() -> str:
         opacity: 0 !important;
     }
 
-    [data-testid="stFileUploaderDropzone"] p,
-    [data-testid="stFileUploaderDropzone"] span {
+    .st-key-upload_button_shell [data-testid="stFileUploaderDropzone"] p,
+    .st-key-upload_button_shell [data-testid="stFileUploaderDropzone"] span {
         color: transparent !important;
         font-size: 0 !important;
         opacity: 0 !important;
+    }
+
+    .st-key-upload_button_shell [data-testid="stFileUploader"] {
+        width: 100%;
     }
 
     .stSelectbox div[data-baseweb="select"] > div {
@@ -346,6 +362,10 @@ def load_styles() -> str:
         border-radius: 22px;
         display: block;
         margin: 0 !important;
+    }
+
+    .st-key-copy_output_shell iframe[title^="components.html"] {
+        height: 60px !important;
     }
 
     @media (max-width: 1400px) {

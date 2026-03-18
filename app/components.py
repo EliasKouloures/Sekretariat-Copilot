@@ -13,12 +13,21 @@ def render_copy_button(label: str, value: str) -> None:
     button_id = f"copy_{uuid4().hex}"
     components.html(
         f"""
+        <style>
+          html, body {{
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+            font-family: Aptos, 'Segoe UI', sans-serif;
+          }}
+        </style>
         <button id="{button_id}" style="
             border-radius:22px;
             border:2px solid rgba(10,25,47,0.82);
-            background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(244,244,249,0.9));
+            background:linear-gradient(180deg, rgba(255,255,255,0.97), rgba(244,244,249,0.92));
             color:#0A192F;
-            font-family:IBM Plex Sans, Segoe UI, sans-serif;
+            font-family:Aptos, Segoe UI, sans-serif;
             font-size:20px;
             font-weight:700;
             padding:0 18px;
@@ -27,6 +36,7 @@ def render_copy_button(label: str, value: str) -> None:
             min-height:60px;
             box-shadow:none;
             line-height:1.1;
+            letter-spacing:-0.02em;
         ">{safe_label}</button>
         <script>
         const button = document.getElementById({json.dumps(button_id)});
@@ -37,5 +47,5 @@ def render_copy_button(label: str, value: str) -> None:
         }});
         </script>
         """,
-        height=72,
+        height=60,
     )

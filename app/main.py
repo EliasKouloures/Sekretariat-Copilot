@@ -149,24 +149,23 @@ def main() -> None:
 
     with left_col:
         st.markdown('<div class="ssa-section-title">History</div>', unsafe_allow_html=True)
-        history_items = service.list_history(limit=18)
-        if not history_items:
-            st.markdown(
-                '<p class="ssa-muted">Past chats will appear here once you have run a prompt.</p>',
-                unsafe_allow_html=True,
-            )
-        else:
-            st.markdown('<div class="ssa-history-list">', unsafe_allow_html=True)
-            for item in history_items:
-                if st.button(
-                    _history_button_label(item),
-                    key=f"history_{item.id}",
-                    width="stretch",
-                    help=item.preview,
-                ):
-                    _load_history_into_state(service, item)
-                    st.rerun()
-            st.markdown("</div>", unsafe_allow_html=True)
+        with st.container(key="history_cards"):
+            history_items = service.list_history(limit=18)
+            if not history_items:
+                st.markdown(
+                    '<p class="ssa-muted">Past chats will appear here once you have run a prompt.</p>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                for item in history_items:
+                    if st.button(
+                        _history_button_label(item),
+                        key=f"history_{item.id}",
+                        width="stretch",
+                        help=item.preview,
+                    ):
+                        _load_history_into_state(service, item)
+                        st.rerun()
 
     with middle_col:
         st.markdown('<div class="ssa-section-title">Context, Info & 2do\'s</div>', unsafe_allow_html=True)
@@ -180,13 +179,14 @@ def main() -> None:
 
         action_left, action_right = st.columns(2, gap="medium")
         with action_left:
-            uploaded_file = st.file_uploader(
-                "Upload File",
-                type=["pdf", "png", "jpg", "jpeg"],
-                accept_multiple_files=False,
-                key=f"workspace_file_{st.session_state.file_uploader_nonce}",
-                label_visibility="collapsed",
-            )
+            with st.container(key="upload_button_shell"):
+                uploaded_file = st.file_uploader(
+                    "Upload File",
+                    type=["pdf", "png", "jpg", "jpeg"],
+                    accept_multiple_files=False,
+                    key=f"workspace_file_{st.session_state.file_uploader_nonce}",
+                    label_visibility="collapsed",
+                )
         with action_right:
             run_prompt = st.button("Run Prompt", type="primary", width="stretch")
 
@@ -239,7 +239,8 @@ def main() -> None:
                 st.session_state.flash_message = "Output deleted."
                 st.rerun()
         with output_right:
-            render_copy_button("Copy Output", output_text)
+            with st.container(key="copy_output_shell"):
+                render_copy_button("Copy Output", output_text)
 
     with right_col:
         st.markdown('<div class="ssa-section-title">Prompts</div>', unsafe_allow_html=True)
