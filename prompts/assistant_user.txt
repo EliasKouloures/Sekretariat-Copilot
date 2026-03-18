@@ -4,13 +4,14 @@ Selected prompt title:
 Selected prompt:
 {prompt_body}
 
-Typed context, info and 2do's:
+Typed context from the upper middle field:
 {context_text}
 
-Uploaded file context:
+Uploaded file text extracted locally from the upload field:
 {file_context}
 
 Instructions:
-- Complete the user's request by applying the selected prompt to the context above.
-- Treat uploaded file content as supporting context.
-- If no uploaded file was provided, ignore that section.
+- Complete the user's request by applying the selected prompt to the inputs above.
+- Use the typed context, the uploaded file text, and the selected prompt together.
+- The uploaded file itself has already been converted into local text before it reaches you here.
+- If either the typed context or uploaded file text is empty, ignore that section.

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from core.errors import AppError
-from core.models import AnalysisPayload, ErrorCode
+from core.models import AnalysisPayload, ErrorCode, FileUpload
 
 
 def test_end_to_end_text_case(case_service, simple_payload) -> None:
@@ -118,3 +118,22 @@ def test_run_prompt_requires_prompt_body(case_service) -> None:
         )
 
     assert exc_info.value.code == ErrorCode.INSUFFICIENT_CONTEXT
+
+
+def test_run_prompt_combines_typed_context_prompt_and_uploaded_file(case_service) -> None:
+    run = case_service.run_prompt(
+        context_text="Please prepare a response about behaviour concerns.",
+        prompt_title="E-Mail to Parents/Students",
+        prompt_body="Write a calm parent reply and include next steps.",
+        files=[
+            FileUpload(
+                name="note.png",
+                content=b"fake-image-bytes",
+                content_type="image/png",
+            )
+        ],
+    )
+
+    assert "Please prepare a response about behaviour concerns." in run.output_text
+    assert "File context: Student: Leo Martin" in run.output_text
+    assert run.prompt_title == "E-Mail to Parents/Students"

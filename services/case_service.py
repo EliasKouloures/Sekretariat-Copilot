@@ -197,8 +197,8 @@ class CaseService:
             {
                 "prompt_title": prompt_title or self.prompt_library.derive_title(cleaned_prompt),
                 "prompt_body": cleaned_prompt,
-                "context_text": typed_context or "No typed context provided.",
-                "file_context": file_context or "No uploaded file context provided.",
+                "context_text": typed_context,
+                "file_context": file_context,
             }
         )
         run = AssistantRun(

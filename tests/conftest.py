@@ -53,7 +53,7 @@ class FakeBackend:
         lines = [f"{prompt_title}"]
         if context_text:
             lines.append(context_text)
-        if file_context and file_context != "No uploaded file context provided.":
+        if file_context:
             lines.append(f"File context: {file_context}")
         lines.append("Prepared locally.")
         return "\n\n".join(lines)
