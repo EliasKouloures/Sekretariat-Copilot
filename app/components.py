@@ -19,7 +19,7 @@ def render_copy_button(label: str, value: str) -> None:
             background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(244,244,249,0.9));
             color:#0A192F;
             font-family:IBM Plex Sans, Segoe UI, sans-serif;
-            font-size:22px;
+            font-size:20px;
             font-weight:700;
             padding:0 18px;
             cursor:pointer;
@@ -37,5 +37,5 @@ def render_copy_button(label: str, value: str) -> None:
         }});
         </script>
         """,
-        height=82,
+        height=72,
     )

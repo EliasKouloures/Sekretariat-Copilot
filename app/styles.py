@@ -40,8 +40,13 @@ def load_styles() -> str:
 
     [data-testid="stToolbar"],
     [data-testid="stDecoration"],
+    [data-testid="stHeader"],
     #MainMenu,
     footer {
+        display: none !important;
+    }
+
+    .stAppHeader {
         display: none !important;
     }
 
@@ -58,7 +63,7 @@ def load_styles() -> str:
 
     .block-container {
         max-width: 1760px;
-        padding-top: 0.55rem;
+        padding-top: 0.35rem;
         padding-bottom: 1.4rem;
     }
 
@@ -71,7 +76,8 @@ def load_styles() -> str:
         border: 2px solid var(--ssa-border);
         border-radius: 28px;
         padding: 20px 34px;
-        margin-bottom: 18px;
+        margin-top: 0;
+        margin-bottom: 16px;
         background:
             linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(244, 244, 249, 0.82)),
             linear-gradient(90deg, rgba(112, 128, 144, 0.08) 1px, transparent 1px),
@@ -176,31 +182,38 @@ def load_styles() -> str:
     .stButton > button {
         min-height: 60px;
         border-radius: 22px;
-        border: 2px solid var(--ssa-border);
+        border: 2px solid var(--ssa-border) !important;
         background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 244, 249, 0.9));
-        color: var(--ssa-navy);
-        box-shadow: none;
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        padding: 0 18px;
+            linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 244, 249, 0.92)) !important;
+        color: var(--ssa-navy) !important;
+        box-shadow: none !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
+        padding: 0 18px !important;
     }
 
-    .stButton > button:hover {
-        border-color: var(--ssa-blue);
-        color: var(--ssa-blue);
+    .stButton > button:hover,
+    .stButton > button:focus,
+    .stButton > button:active {
+        border-color: var(--ssa-blue) !important;
+        color: var(--ssa-blue) !important;
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 244, 249, 0.92)) !important;
+        box-shadow: none !important;
     }
 
     .stButton > button p {
-        font-size: 22px !important;
+        font-size: 20px !important;
         font-weight: 700 !important;
         line-height: 1.1 !important;
         color: var(--ssa-navy) !important;
     }
 
     .stButton > button[kind="primary"],
-    .stButton > button[kind="primary"]:hover {
+    .stButton > button[kind="primary"]:hover,
+    .stButton > button[kind="primary"]:focus,
+    .stButton > button[kind="primary"]:active {
         background: linear-gradient(180deg, rgba(0, 51, 153, 0.98), rgba(10, 25, 47, 0.98));
         color: white !important;
         border-color: rgba(0, 51, 153, 0.98);
@@ -211,19 +224,30 @@ def load_styles() -> str:
         color: rgba(244, 244, 249, 0.98) !important;
     }
 
-    [data-testid="stVerticalBlockBorderWrapper"] .stButton > button {
-        min-height: 48px;
-        font-size: 17px;
-        font-weight: 600;
+    .ssa-history-list .stButton > button {
+        min-height: 84px !important;
+        height: auto !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
         justify-content: flex-start;
-        padding-left: 12px;
-        margin-bottom: 8px;
+        align-items: flex-start;
+        padding: 12px 14px !important;
+        margin-bottom: 10px;
+        border-radius: 20px !important;
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(244, 244, 249, 0.92)) !important;
+        color: var(--ssa-navy) !important;
     }
 
-    [data-testid="stVerticalBlockBorderWrapper"] .stButton > button p {
+    .ssa-history-list .stButton > button p {
         text-align: left;
-        white-space: normal;
-        font-size: 17px !important;
+        white-space: normal !important;
+        font-size: 16px !important;
+        line-height: 1.3 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden !important;
     }
 
     [data-testid="stFileUploaderDropzone"] {
@@ -233,8 +257,25 @@ def load_styles() -> str:
         background:
             linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 244, 249, 0.9)) !important;
         padding: 0 !important;
-        position: relative;
+        position: relative !important;
         overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    [data-testid="stFileUploaderDropzone"]::after {
+        content: "Add File";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ssa-navy);
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        pointer-events: none;
     }
 
     [data-testid="stFileUploaderDropzoneInstructions"],
@@ -254,25 +295,14 @@ def load_styles() -> str:
         position: relative;
         font-size: 0 !important;
         padding: 0 !important;
-    }
-
-    [data-testid="stFileUploaderDropzone"] button::after {
-        content: "Upload File";
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--ssa-navy);
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
+        opacity: 0 !important;
     }
 
     [data-testid="stFileUploaderDropzone"] p,
     [data-testid="stFileUploaderDropzone"] span {
         color: transparent !important;
         font-size: 0 !important;
+        opacity: 0 !important;
     }
 
     .stSelectbox div[data-baseweb="select"] > div {
@@ -283,6 +313,7 @@ def load_styles() -> str:
     }
 
     div[data-baseweb="popover"],
+    div[data-baseweb="popover"] > div,
     div[data-baseweb="menu"],
     ul[role="listbox"] {
         background: rgba(255, 255, 255, 0.98) !important;
@@ -290,6 +321,12 @@ def load_styles() -> str:
         border: 1.5px solid rgba(10, 25, 47, 0.22) !important;
         border-radius: 20px !important;
         box-shadow: none !important;
+    }
+
+    div[data-baseweb="popover"] *,
+    div[data-baseweb="menu"] *,
+    ul[role="listbox"] * {
+        color: var(--ssa-navy) !important;
     }
 
     li[role="option"],
@@ -307,6 +344,8 @@ def load_styles() -> str:
 
     iframe[title^="components.html"] {
         border-radius: 22px;
+        display: block;
+        margin: 0 !important;
     }
 
     @media (max-width: 1400px) {
